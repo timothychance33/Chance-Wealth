@@ -297,6 +297,19 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* More sheet (mobile) */
+  .more-scrim{position:fixed;inset:0;background:rgba(17,48,42,.4);opacity:0;pointer-events:none;transition:.22s;z-index:38}
+  .more-scrim.show{opacity:1;pointer-events:auto}
+  .more-sheet{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-radius:18px 18px 0 0;box-shadow:0 -8px 40px rgba(17,48,42,.25);transform:translateY(110%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:39;padding:10px 18px calc(86px + env(safe-area-inset-bottom))}
+  .more-sheet.show{transform:none}
+  .ms-handle{width:38px;height:4px;border-radius:2px;background:var(--line-strong);margin:6px auto 16px}
+  .ms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .ms-grid button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--ink-soft);transition:.15s}
+  .ms-grid button:active{transform:scale(.96)}
+  .ms-grid button svg{width:24px;height:24px;color:var(--brass-deep)}
+  .ms-grid button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .ms-grid button.active svg{color:var(--brass-lt)}
+
   /* Cash flow view */
   .cf-period{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
   .cf-period .chip{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:6px 14px;border-radius:18px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
@@ -560,25 +573,37 @@
   </button>
   <button data-view="realestate">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
-    Real Estate
+    Property
   </button>
   <button data-view="cashflow">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
     Cash Flow
   </button>
-  <button data-view="entities">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-    Entities
-  </button>
-  <button data-view="vehicles">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>
-    Vehicles
-  </button>
-  <button data-view="snapshots">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
-    Trend
+  <button id="mobMore">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+    More
   </button>
 </nav>
+
+<!-- More sheet -->
+<div class="more-scrim" id="moreScrim"></div>
+<div class="more-sheet" id="moreSheet">
+  <div class="ms-handle"></div>
+  <div class="ms-grid">
+    <button data-view="vehicles">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>
+      <span>Vehicles</span>
+    </button>
+    <button data-view="entities">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      <span>Entities</span>
+    </button>
+    <button data-view="snapshots">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
+      <span>Trend</span>
+    </button>
+  </div>
+</div>
 
 <main>
   <!-- OVERVIEW -->
@@ -1724,17 +1749,30 @@ function doExport(){
   setTimeout(()=>window.print(),300);
 }
 
+const MORE_VIEWS=['vehicles','entities','snapshots'];
 function switchView(v){
-  document.querySelectorAll('#nav button,#mobTabs button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
+  document.querySelectorAll('#nav button,#mobTabs button[data-view],#moreSheet button[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
+  const moreBtn=document.getElementById('mobMore');
+  if(moreBtn)moreBtn.classList.toggle('active',MORE_VIEWS.includes(v));
   document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  closeMoreSheet();
   window.scrollTo({top:0,behavior:'smooth'});
 }
+function openMoreSheet(){document.getElementById('moreScrim').classList.add('show');document.getElementById('moreSheet').classList.add('show');}
+function closeMoreSheet(){const sc=document.getElementById('moreScrim'),sh=document.getElementById('moreSheet');if(sc)sc.classList.remove('show');if(sh)sh.classList.remove('show');}
 document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(b)switchView(b.dataset.view);});
+document.getElementById('mobTabs').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(b)switchView(b.dataset.view);});
 document.getElementById('gotoRE').addEventListener('click',()=>switchView('realestate'));
 document.getElementById('editToggle').addEventListener('click',e=>{editMode=!editMode;e.target.classList.toggle('on',editMode);e.target.textContent=editMode?'Done editing':'Edit values';renderLedgers();});
 document.getElementById('snapBtn').addEventListener('click',()=>saveSnapshot(false));
 document.getElementById('backupBtn').addEventListener('click',doBackup);
 document.getElementById('addVeh').addEventListener('click',addVehicle);
+document.getElementById('mobMore').addEventListener('click',()=>{
+  const sheet=document.getElementById('moreSheet');
+  sheet.classList.contains('show')?closeMoreSheet():openMoreSheet();
+});
+document.getElementById('moreScrim').addEventListener('click',closeMoreSheet);
+document.querySelectorAll('#moreSheet button[data-view]').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));
 document.querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',e=>{
   document.querySelectorAll('[data-period]').forEach(x=>x.classList.remove('on'));
   e.target.classList.add('on');
