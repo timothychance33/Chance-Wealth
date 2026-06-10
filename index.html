@@ -656,57 +656,18 @@ const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let _user = null;
 
 /* ── Constants ───────────────────────────────────────────── */
-const TODAY = new Date('2026-06-09');
-const SEED_ACCOUNTS=[
-  {id:'co1',name:'Simply Checking',institution:'Capital One',kind:'checking',entity:'Personal',balance:8872.45,updated:'2026-06-09'},
-  {id:'co2',name:'Savings Now',institution:'Capital One',kind:'savings',entity:'Personal',balance:5042.87,updated:'2026-06-09'},
-  {id:'co3',name:'A Chance Checking',institution:'Capital One',kind:'checking',entity:'A Chance',balance:4060.06,updated:'2026-06-09'},
-  {id:'co4',name:'A Chance Savings',institution:'Capital One',kind:'savings',entity:'A Chance',balance:25120.46,updated:'2026-06-09'},
-  {id:'hf1',name:'TL Chance Properties',institution:'Home Federal',kind:'checking',entity:'TLChance',balance:29903.69,updated:'2026-06-09'},
-  {id:'hf2',name:'2nd Chance Motors',institution:'Home Federal',kind:'checking',entity:'2nd Chance Motors',balance:7246.34,updated:'2026-06-09',notes:'Available showed $490.46 vs $7,246.34 current — verify holds'},
-  {id:'hf3',name:'Chance Classics LLC',institution:'Home Federal',kind:'checking',entity:'Chance Classics',balance:5010.26,updated:'2026-06-09'},
-  {id:'hf4',name:'Chance Builders LLC',institution:'Home Federal',kind:'checking',entity:'Chance Builders',balance:29001.60,updated:'2026-06-09'},
-  {id:'ln1',name:'2nd Chance Motors LOC',institution:'Home Federal',kind:'loan',entity:'2nd Chance Motors',balance:240956.63,rate:6.75,maturity:'2026-10-15',updated:'2026-06-09',notes:'~$250k line, $9,043.37 available. Replaces the old 2nd Chance $246,000 line. Matures Oct 2026.'},
-  {id:'ln2',name:'A Chance Realty — Construction',institution:'Home Federal',kind:'checking',entity:'A Chance Realty',balance:237181.80,updated:'2026-06-09',notes:'Construction/building deposit account — $15,328.72 showed as available, balance likely committed to draws'},
-  {id:'ln3',name:'Operating Line of Credit',institution:'Home Federal',kind:'credit',entity:'TLChance',balance:520250.21,rate:6.75,payment:2988.59,maturity:'2027-02-12',updated:'2026-06-09',notes:'Operating LOC secured by 118 5th & 332 Tanyard — currently carrying 3 Parc lots and a flip house'},
-  {id:'ln4',name:'2403 Tillman St — Owner-Financed',institution:'b1BANK',kind:'loan',entity:'Personal',balance:193312.46,payment:1631.34,updated:'2026-06-09',excluded:true,notes:'2403 Tillman St, Bossier City — owner-financed to a friend; buyer pays the exact $1,631.34 note payment, so this is a wash and excluded from totals'},
-  {id:'cl1',name:'108/110 Sibley Line',institution:'Home Federal',kind:'credit',entity:'TLChance',balance:0,updated:'2026-06-09',notes:'$160,000 available, undrawn'},
-  {id:'iv1',name:"Townes' IRA",institution:'Ameriprise',kind:'investment',entity:'Personal',balance:4634.88,updated:'2026-06-09'},
-  {id:'iv2',name:'Ashleys Roth',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:102829.42,updated:'2026-06-09'},
-  {id:'iv3',name:'Tims Traditional',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:38113.49,updated:'2026-06-09'},
-  {id:'iv4',name:'Ashleys SEP',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:224102.77,updated:'2026-06-09'},
-  {id:'iv5',name:'Townes College',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:55545.98,updated:'2026-06-09'},
-  {id:'iv6',name:'Townes Car',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:21034.78,updated:'2026-06-09'},
-  {id:'iv7',name:'401(k) — Bonvenu ESOP Plan',institution:'Principal',kind:'investment',entity:'Personal',balance:95256.97,updated:'2026-06-09'},
-  {id:'iv8',name:'ESOP — Bonvenu Bancorp',institution:'Principal',kind:'investment',entity:'Personal',balance:118511.18,updated:'2026-06-09'},
-];
-const V2_PROP_LOANS={'118-5th':447934.43,'6356-hwy3':1068672.85,'108-sibley':559764.97,'110-sibley':610652.05};
+const TODAY = new Date();
 const SEED = {
-  asOf:'2026-06-09',
-  dataVersion:8,
-  cash:[{k:'Money Market',v:0},{k:"CD's",v:0},{k:'Cash on Hand',v:5000}],
-  accounts:SEED_ACCOUNTS,
-  physical:[{k:'Jewelry',v:40000},{k:'Automobile #1',v:100000},{k:'Automobile #2',v:45000},{k:"RV's, Boats, Etc.",v:25000},{k:'Furniture',v:0},{k:'Collectibles',v:0}],
-  longTerm:[{k:'2nd Chance',v:682000,tag:'business'},{k:'Cash Value Life Ins.',v:0}],
-  installment:[],
-  revolving:[],
-  properties:[
-    {id:'tanyard',addr:'332 Tanyard Trace',owner:'Joint',purchased:'2018-06-01',kind:'residential',use:'Primary residence',value:775000,loan:309821.28,payment:3245.40,taxes:5989.16,lender:'Rocket Mortgage / Lakeview',note:'2.5% fixed — loan #0711174615',leases:[]},
-    {id:'twin',addr:'331 Twin Point',owner:'JamFam',purchased:'2018-03-09',kind:'residential',use:'Second home',value:150000,loan:60000,payment:770,taxes:1003.18,lender:'Home Federal',leases:[]},
-    {id:'118-5th',addr:'118 5th Street',owner:'TLChance',purchased:'2019-04-16',kind:'investment',use:'Commercial',value:1125000,loan:447934.43,payment:3398.23,taxes:17176.97,lender:'Home Federal',leases:[{u:'A',begin:'2021-01-01',end:'2026-12-31',rent:4500},{u:'B',begin:'2025-06-01',end:'2028-05-31',rent:2000},{u:'C',begin:'2021-03-01',end:'2026-02-28',rent:1500},{u:'2A',begin:'2026-06-01',end:'2027-05-31',rent:800},{u:'2B',begin:'2022-11-01',end:'2025-10-31',rent:0}]},
-    {id:'112-5th',addr:'112 5th Street',owner:'TLChance',purchased:'2021-03-12',kind:'investment',use:'Commercial',value:200000,loan:0,payment:0,taxes:886.65,lender:'Home Federal',leases:[{u:'Tenant',begin:'',end:'',rent:1500}]},
-    {id:'104-sibley',addr:'104 N Sibley',owner:'2nd Chance',purchased:'2016-02-08',kind:'investment',use:'Commercial',value:225000,loan:0,payment:0,taxes:760.10,lender:'—',leases:[{u:'Tenant',begin:'',end:'',rent:617}]},
-    {id:'6356-hwy3',addr:'6356 Hwy 3',owner:'TLChance',purchased:'2021-09-10',kind:'investment',use:'Commercial',value:1390000,loan:1068672.85,payment:6279,taxes:513.09,lender:'Home Federal',leases:[{u:'A',begin:'2026-06-01',end:'2029-05-31',rent:2100},{u:'B',begin:'2024-01-01',end:'2024-12-31',rent:2000},{u:'C&D',begin:'2024-01-01',end:'2028-12-13',rent:4300}]},
-    {id:'108-sibley',addr:'108 N Sibley',owner:'TLChance',purchased:'2021-11-08',kind:'investment',use:'Commercial',value:850000,loan:559764.97,payment:4000,taxes:139.18,lender:'—',note:'Prescribes 2028',leases:[{u:'Tenant',begin:'2025-01-01',end:'2029-12-31',rent:7000}]},
-    {id:'110-sibley',addr:'110 N Sibley',owner:'TLChance',purchased:'',kind:'investment',use:'Commercial',value:950000,loan:610652.05,payment:5000,taxes:0,lender:'—',leases:[{u:'C',begin:'2026-01-01',end:'2027-12-31',rent:2200},{u:'D',begin:'2026-01-01',end:'2027-12-31',rent:2200}]},
-    {id:'207-5th',addr:'207 5th Street',owner:'TLChance',purchased:'2022-09-01',kind:'investment',use:'Commercial',value:457000,loan:110000,payment:1796,taxes:1639.23,lender:'Home Federal',leases:[{u:'Tenant',begin:'2022-09-01',end:'2029-08-31',rent:2075}]},
-    {id:'6362-hwy3',addr:'6362 Hwy 3',owner:'TLChance',purchased:'2021-09-10',kind:'investment',use:'Commercial',value:215000,loan:0,payment:0,taxes:645.44,lender:'—',leases:[{u:'Tenant',begin:'2024-03-01',end:'2029-02-28',rent:2000}]},
-    {id:'210-5th',addr:'210 5th Street',owner:'TLChance',purchased:'2024-10-07',kind:'investment',use:'Commercial',value:245000,loan:255510,payment:1100,taxes:0,lender:'B1 Bank',leases:[{u:'Tenant',begin:'2025-02-01',end:'2026-01-31',rent:1000}]},
-    {id:'parc-sequoia',addr:'313 Sequoia Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:84000,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-    {id:'parc-denali-206',addr:'206 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-    {id:'parc-denali-224',addr:'224 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-  ],
-  snapshots:[],
+  asOf: new Date().toISOString().slice(0,10),
+  dataVersion: 8,
+  cash: [],
+  physical: [],
+  longTerm: [],
+  installment: [],
+  revolving: [],
+  accounts: [],
+  properties: [],
+  snapshots: [],
 };
 
 let state = JSON.parse(JSON.stringify(SEED));
@@ -735,45 +696,11 @@ async function load(){
   renderAll();
 }
 function runMigrations(){
-  if(!state.accounts){state.accounts=[];
-    for(let i=state.cash.length-1;i>=0;i--){const c=state.cash[i],n=c.k.toLowerCase();
-      if(n.includes('checking')||n.includes('savings')){state.accounts.unshift({id:'a'+Date.now()+i,name:c.k,institution:'',kind:n.includes('sav')?'savings':'checking',entity:'Personal',balance:c.v,updated:state.asOf});state.cash.splice(i,1);}}}
-  if(!state.dataVersion||state.dataVersion<2){
-    state.accounts=state.accounts.filter(a=>a.id!=='a-chk'&&a.id!=='a-sav');
-    SEED_ACCOUNTS.forEach(n=>{if(!state.accounts.some(a=>a.id===n.id))state.accounts.push(JSON.parse(JSON.stringify(n)));});
-    state.longTerm=(state.longTerm||[]).filter(x=>!['401(k)',"IRA's",'Brokerage','College Savings'].includes(x.k));
-    state.installment=(state.installment||[]).filter(x=>x.k!=='2nd Chance');
-    (state.properties||[]).forEach(p=>{if(V2_PROP_LOANS[p.id]!=null)p.loan=V2_PROP_LOANS[p.id];});
-    state.dataVersion=2;save();}
-  if(state.dataVersion<3){
-    const l3=state.accounts.find(a=>a.id==='ln3');
-    if(l3){l3.kind='credit';l3.name='Operating Line of Credit';l3.notes='Operating LOC secured by 118 5th & 332 Tanyard — currently carrying 3 Parc lots and a flip house';}
-    const l4=state.accounts.find(a=>a.id==='ln4');
-    if(l4){l4.excluded=true;l4.notes='Owner-financed property — buyer pays the exact note payment, so this is a wash and excluded from totals';}
-    state.dataVersion=3;save();}
-  if(state.dataVersion<4){
-    const t4=state.accounts.find(a=>a.id==='ln4');
-    if(t4){t4.name='2403 Tillman St — Owner-Financed';t4.notes='2403 Tillman St, Bossier City — owner-financed to a friend; buyer pays the exact $1,631.34 note payment, so this is a wash and excluded from totals';}
-    state.dataVersion=4;save();}
-  if(state.dataVersion<5){
-    const c5=state.accounts.find(a=>a.id==='ln2');
-    if(c5){c5.kind='checking';c5.notes='Construction/building deposit account — $15,328.72 showed as available, balance likely committed to draws';}
-    state.dataVersion=5;save();}
-  if(state.dataVersion<6){
-    const tn=state.properties.find(p=>p.id==='tanyard');
-    if(tn){tn.loan=309821.28;tn.payment=3245.40;tn.lender='Rocket Mortgage / Lakeview';tn.note='2.5% fixed — loan #0711174615';}
-    state.dataVersion=6;save();}
-  if(state.dataVersion<7){
-    const newLots=[
-      {id:'parc-sequoia',addr:'313 Sequoia Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:84000,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-      {id:'parc-denali-206',addr:'206 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-      {id:'parc-denali-224',addr:'224 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
-    ];
-    newLots.forEach(l=>{if(!state.properties.some(p=>p.id===l.id))state.properties.push(l);});
-    state.dataVersion=7;save();}
-  if(state.dataVersion<8){
-    ['parc-sequoia','parc-denali-206','parc-denali-224'].forEach(id=>{const p=state.properties.find(x=>x.id===id);if(p)p.owner='Chance Builders LLC';});
-    state.dataVersion=8;save();}
+  ['cash','physical','longTerm','installment','revolving','accounts','properties','snapshots'].forEach(k=>{
+    if(!Array.isArray(state[k]))state[k]=[];
+  });
+  if(!state.asOf)state.asOf=new Date().toISOString().slice(0,10);
+  if(!state.dataVersion)state.dataVersion=8;
 }
 
 /* ── Auth ────────────────────────────────────────────────── */
@@ -834,9 +761,9 @@ function renderHero(){
   document.getElementById('heroNW').textContent='$'+Math.floor(t.nw).toLocaleString('en-US');
   document.getElementById('hmAssets').textContent=fmt(t.assets);
   document.getElementById('hmLiab').textContent=fmt(t.liab);
-  document.getElementById('hmDTA').textContent=(t.liab/t.assets*100).toFixed(0)+'%';
+  document.getElementById('hmDTA').textContent=t.assets>0?(t.liab/t.assets*100).toFixed(0)+'%':'—';
   document.getElementById('hmCash').textContent=fmt(t.cash);
-  const liquid=t.cash, re=t.re.value, lt=t.lt+t.phys, tot=liquid+re+lt;
+  const liquid=t.cash, re=t.re.value, lt=t.lt+t.phys, tot=(liquid+re+lt)||1;
   document.getElementById('compbar').innerHTML=`<i style="width:${liquid/tot*100}%;background:#8DD3BC"></i><i style="width:${re/tot*100}%;background:#A87E33"></i><i style="width:${lt/tot*100}%;background:#C9D6D0"></i>`;
   const s=state.snapshots, d=document.getElementById('heroDelta');
   if(s.length){const last=s[s.length-1];const diff=t.nw-last.nw;d.innerHTML=`Since ${fmtDate(last.date)} &nbsp;<b style="color:${diff>=0?'#8DD3BC':'#E5AD9F'}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))}</b>`;}
@@ -847,7 +774,7 @@ function renderRail(){
   const t=totals();
   const items=[
     {l:'Liquid Cash',n:fmt(t.cash),m:'checking, savings, on hand'},
-    {l:'Real Estate Equity',n:fmtM(t.re.equity),m:(t.re.equity/t.re.value*100).toFixed(0)+'% of value',cls:'pos'},
+    {l:'Real Estate Equity',n:fmtM(t.re.equity),m:t.re.value>0?(t.re.equity/t.re.value*100).toFixed(0)+'% of value':'no properties yet',cls:'pos'},
     {l:'Investments / Retire',n:fmtM(t.invest),m:'401k, IRA, brokerage'},
     {l:'Rental Income',n:fmt(t.re.rent),m:'/mo active leases'},
     {l:'Net Property Cash Flow',n:fmt(t.re.cashflow),m:'/mo after debt',cls:t.re.cashflow>=0?'pos':'neg'},
@@ -922,7 +849,7 @@ function renderGlance(){
     <div class="gs"><div class="l">Equity</div><div class="n pos">${fmt(t.equity)}</div></div>
     <div class="gs"><div class="l">Rent / mo</div><div class="n">${fmt(t.rent)}</div></div>
     <div class="gs"><div class="l">Net Cash Flow / mo</div><div class="n ${t.cashflow>=0?'pos':''}">${fmt(t.cashflow)}</div></div>`;
-  const eqPct=t.equity/t.value*100;
+  const eqPct=t.value>0?t.equity/t.value*100:0;
   document.getElementById('pfRibbon').innerHTML=`<div class="rb"><i class="eq" style="width:${eqPct}%"></i><i class="debt" style="width:${100-eqPct}%"></i></div>
     <div class="cap"><span>${eqPct.toFixed(0)}% equity · ${fmt(t.equity)}</span><span>${fmt(t.loan)} financed</span></div>`;
 }
@@ -931,14 +858,14 @@ function renderRE(){
   const t=reTotals();
   document.getElementById('reStats').innerHTML=`
     <div class="stat"><div class="lab">Portfolio Value</div><div class="val">${fmt(t.value)}</div><div class="meta">${state.properties.length} properties</div></div>
-    <div class="stat"><div class="lab">Total Equity</div><div class="val">${fmt(t.equity)}</div><div class="meta pos">${(t.equity/t.value*100).toFixed(0)}% owned outright</div></div>
+    <div class="stat"><div class="lab">Total Equity</div><div class="val">${fmt(t.equity)}</div><div class="meta pos">${t.value>0?(t.equity/t.value*100).toFixed(0):0}% owned outright</div></div>
     <div class="stat"><div class="lab">Active Rent / mo</div><div class="val">${fmt(t.rent)}</div><div class="meta">${fmt(t.rent*12)} / yr</div></div>
     <div class="stat"><div class="lab">Net Cash Flow / mo</div><div class="val">${fmt(t.cashflow)}</div><div class="meta pos">after ${fmt(t.debtSvc)} debt service</div></div>`;
   let props=state.properties.slice();
   if(propFilter!=='all') props=props.filter(p=>p.kind===propFilter);
   document.getElementById('reCount').textContent=`${props.length} of ${state.properties.length} shown`;
   document.getElementById('portfolio').innerHTML=props.map(p=>{
-    const eq=p.value-p.loan, eqPct=Math.max(0,eq)/p.value*100, debtPct=Math.min(100,p.loan/p.value*100);
+    const eq=p.value-p.loan, eqPct=p.value>0?Math.max(0,eq)/p.value*100:0, debtPct=p.value>0?Math.min(100,p.loan/p.value*100):0;
     const rent=activeRent(p), cf=rent-p.payment, exp=hasExpired(p);
     return `<div class="prop" data-id="${p.id}">
       <div class="pr-top"><div class="addr">${p.addr}<span class="owner">${p.owner}</span>${exp?'<span class="alert">lease expired</span>':''}${p.note?'<span class="alert" style="color:var(--brass-deep);background:rgba(168,126,51,.12)">'+p.note+'</span>':''}</div>
@@ -948,7 +875,7 @@ function renderRE(){
     </div>`;
   }).join('');
   document.querySelectorAll('.prop').forEach(el=>el.addEventListener('click',()=>openDrawer(el.dataset.id)));
-  document.getElementById('reFoot').innerHTML=`<b>Active rent</b> counts only leases whose term covers today (${fmtDate('2026-06-09')}); expired leases are flagged and excluded, so this reflects what's actually collectible.`;
+  document.getElementById('reFoot').innerHTML=`<b>Active rent</b> counts only leases whose term covers today (${TODAY.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}); expired leases are flagged and excluded, so this reflects what's actually collectible.`;
 }
 
 function recomputeAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();save();}
