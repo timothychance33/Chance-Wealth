@@ -435,6 +435,8 @@
   .attn-body span{font-size:12px;color:var(--ink-soft);line-height:1.4}
   .attn-body .attn-act{all:unset;cursor:pointer;font-size:12px;font-weight:600;color:var(--brass-deep);margin-top:4px;display:block}
   .attn-body .attn-act:hover{text-decoration:underline}
+  .attn-dismiss{all:unset;cursor:pointer;font-size:17px;line-height:1;color:var(--ink-faint);padding:2px 4px;border-radius:5px;align-self:flex-start;flex:0 0 auto;transition:.12s}
+  .attn-dismiss:hover{color:var(--ink-soft);background:var(--surface-2)}
 </style>
 </head>
 <body>
@@ -1142,6 +1144,12 @@ function autoSnapshot(){
 }
 
 /* ── Attention panel ─────────────────────────────── */
+/* ── Dismissed alerts ───────────────────────────── */
+function getIgnored(){try{return new Set(JSON.parse(localStorage.getItem('cw-ignored')||'[]'));}catch(e){return new Set();}}
+function setIgnored(set){try{localStorage.setItem('cw-ignored',JSON.stringify([...set]));}catch(e){}}
+function ignoreAlert(key){const ig=getIgnored();ig.add(key);setIgnored(ig);}
+function alertKey(level,title){return level+':'+title;}   // stable key based on content
+
 function buildAttention(){
   const items=[];
   const today=new Date();
@@ -1189,11 +1197,20 @@ function buildAttention(){
     items.push({level:'info',icon:'📈',title:'No net worth snapshots yet',detail:'Save your first snapshot to start tracking your trend over time.',act:'snapshots'});
   }
 
+  // assign stable keys; filter out ignored unless escalated to urgent
+  const ignored=getIgnored();
+  items.forEach(it=>it.key=alertKey(it.level,it.title));
+  const visible=items.filter(it=>{
+    if(!ignored.has(it.key))return true;
+    // always show if escalated to urgent even if previously ignored
+    return it.level==='urgent'&&!ignored.has(alertKey('urgent',it.title));
+  });
+
   const panel=document.getElementById('attnPanel');
   const list=document.getElementById('attnItems');
-  if(!items.length){panel.style.display='none';return;}
+  if(!visible.length){panel.style.display='none';return;}
   panel.style.display='block';
-  list.innerHTML=items.map(it=>`
+  list.innerHTML=visible.map(it=>`
     <div class="attn-item ${it.level}">
       <div class="attn-icon">${it.icon}</div>
       <div class="attn-body">
@@ -1201,12 +1218,19 @@ function buildAttention(){
         <span>${esc(it.detail)}</span>
         ${it.act?`<span class="attn-act" data-attn-act="${it.act}">View →</span>`:''}
       </div>
+      <button class="attn-dismiss" data-dismiss-key="${esc(it.key)}" title="Ignore this alert">×</button>
     </div>`).join('');
   list.querySelectorAll('[data-attn-act]').forEach(el=>el.addEventListener('click',()=>{
     const v=el.dataset.attnAct;
     if(v==='accounts')switchView('accounts');
     else if(v==='snapshots')switchView('snapshots');
     else{switchView('realestate');setTimeout(()=>openDrawer(v),400);}
+  }));
+  list.querySelectorAll('[data-dismiss-key]').forEach(btn=>btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    ignoreAlert(btn.dataset.dismissKey);
+    buildAttention();
+    toast('Alert hidden');
   }));
 }
 
