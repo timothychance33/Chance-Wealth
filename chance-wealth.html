@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chance Wealth — Financial Picture</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chance Wealth">
+<meta name="theme-color" content="#11302A">
+<link rel="apple-touch-icon" href="https://via.placeholder.com/180/11302A/A87E33?text=CW">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EBE9E1;
+    --surface:#FBFAF6;
+    --surface-2:#F3F1EA;
+    --ink:#11302A;
+    --ink-2:#0B2620;
+    --ink-soft:#46584F;
+    --ink-faint:#8B958D;
+    --line:#E2DFD4;
+    --line-strong:#CDC9BB;
+    --brass:#A87E33;
+    --brass-lt:#C49B4E;
+    --brass-deep:#7C5A1D;
+    --green:#2E7A62;
+    --green-soft:#73A795;
+    --green-bright:#8DD3BC;
+    --brick:#9E4B3A;
+    --brick-soft:#C68877;
+    --shadow:0 1px 2px rgba(17,48,42,.04),0 6px 22px rgba(17,48,42,.05);
+    --shadow-lg:0 2px 6px rgba(17,48,42,.08),0 24px 60px rgba(17,48,42,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+  .num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+  /* ---------- Sidebar ---------- */
+  aside{width:218px;flex:0 0 218px;background:var(--ink);color:#DCE5E0;display:flex;flex-direction:column;padding:24px 16px;position:sticky;top:0;height:100vh}
+  .brand{padding:0 8px 22px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .brand .mark{font-family:"Fraunces",serif;font-size:20px;font-weight:600;color:#fff;display:flex;align-items:center;gap:9px}
+  .brand .mark .seal{width:23px;height:23px;border:1.5px solid var(--brass);border-radius:50%;display:grid;place-items:center;font-size:11px;color:var(--brass-lt);font-weight:700}
+  .brand .sub{font-size:10.5px;color:var(--green-soft);letter-spacing:.16em;text-transform:uppercase;margin-top:7px;padding-left:1px}
+  nav{margin-top:18px;display:flex;flex-direction:column;gap:1px;flex:1}
+  nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;color:#A6B8B0;font-size:13.5px;font-weight:500;transition:background .15s,color .15s}
+  nav button .ic{width:16px;height:16px;opacity:.8;flex:0 0 16px}
+  nav button:hover{background:rgba(255,255,255,.06);color:#EAF1EE}
+  nav button.active{background:rgba(168,126,51,.18);color:#fff}
+  nav button.active .ic{opacity:1;color:var(--brass-lt)}
+  nav .group-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#586C65;padding:16px 12px 5px}
+  .as-of{padding:13px 12px 0;border-top:1px solid rgba(255,255,255,.08);font-size:11.5px;color:#788C85}
+  .as-of b{color:#C5D2CC;font-weight:500;display:block;margin-top:2px}
+
+  /* ---------- Main ---------- */
+  main{flex:1;min-width:0;padding:28px 38px 70px;max-width:1240px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;gap:18px;flex-wrap:wrap}
+  .topbar .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+  .topbar h1{font-family:"Fraunces",serif;font-weight:500;font-size:29px;line-height:1.05;letter-spacing:-.01em}
+  .actions{display:flex;gap:9px;align-items:center}
+  .btn{all:unset;cursor:pointer;font-size:13px;font-weight:600;padding:8px 15px;border-radius:8px;transition:.15s;white-space:nowrap}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:var(--ink-2)}
+  .btn.ghost{border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+  .btn.ghost:hover{border-color:var(--ink-soft);color:var(--ink)}
+  .btn.ghost.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .view{display:none}
+  .view.active{display:block}
+  .stagger>*{opacity:0;animation:rise .5s cubic-bezier(.2,.7,.3,1) forwards}
+  .stagger>*:nth-child(1){animation-delay:.02s}.stagger>*:nth-child(2){animation-delay:.08s}
+  .stagger>*:nth-child(3){animation-delay:.14s}.stagger>*:nth-child(4){animation-delay:.2s}.stagger>*:nth-child(5){animation-delay:.26s}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){.stagger>*{animation:none;opacity:1}}
+
+  /* ---------- Hero (compact, horizontal) ---------- */
+  .hero{background:linear-gradient(150deg,var(--ink),var(--ink-2));color:#EAF1EE;border-radius:16px;padding:24px 28px 20px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:14px}
+  .hero::after{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border:1px solid rgba(168,126,51,.16);border-radius:50%}
+  .hero::before{content:"";position:absolute;right:-10px;top:-10px;width:180px;height:180px;border:1px solid rgba(168,126,51,.1);border-radius:50%}
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;position:relative;flex-wrap:wrap}
+  .hero .lab{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green-soft)}
+  .hero .nw{font-family:"Fraunces",serif;font-weight:500;font-size:50px;line-height:1;margin:8px 0 0;letter-spacing:-.02em}
+  .hero .rule{height:2px;width:96px;background:linear-gradient(90deg,var(--brass-lt),transparent);margin:11px 0 0}
+  .hero .delta{font-size:12px;margin-top:11px;color:#9FB6AE}
+  .hero .delta b{font-family:"IBM Plex Mono",monospace}
+  .hmetrics{display:grid;grid-template-columns:repeat(2,auto);gap:14px 34px;align-self:center}
+  .hmetrics .hm .l{font-size:11px;color:#8FA59D;letter-spacing:.05em}
+  .hmetrics .hm .n{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums}
+  .hmetrics .hm .n.up{color:var(--green-bright)}.hmetrics .hm .n.down{color:#E5AD9F}
+  .compbar{height:10px;border-radius:5px;overflow:hidden;display:flex;margin:18px 0 7px;background:rgba(255,255,255,.07);position:relative}
+  .compbar i{display:block;height:100%}
+  .compkey{display:flex;gap:18px;font-size:11.5px;color:#8FA59D;position:relative;flex-wrap:wrap}
+  .compkey i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+
+  /* ---------- KPI rail ---------- */
+  .rail{display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+  .rail .k{padding:14px 16px;border-right:1px solid var(--line)}
+  .rail .k:last-child{border-right:none}
+  .rail .k .l{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+  .rail .k .n{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .rail .k .m{font-size:11px;color:var(--ink-soft);margin-top:3px}
+  .rail .k .m.pos{color:var(--green)}.rail .k .m.neg{color:var(--brick)}
+
+  /* ---------- cards / ledgers ---------- */
+  .grid{display:grid;gap:14px}
+  .grid.two{grid-template-columns:1fr 1fr}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}
+  .card h2{font-family:"Fraunces",serif;font-weight:500;font-size:17px;padding:15px 20px 0;display:flex;justify-content:space-between;align-items:baseline}
+  .card h2 .tot{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
+  .card h2 .tot.assets{color:var(--green)}.card h2 .tot.liab{color:var(--brick)}
+  .ledger{padding:6px 20px 14px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:6.5px 0;border-bottom:1px solid var(--line);gap:12px}
+  .row:last-child{border-bottom:none}
+  .row .k{color:var(--ink-soft);font-size:13.5px;display:flex;align-items:center;gap:7px}
+  .row .k .tag{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--brass-deep);background:rgba(168,126,51,.12);padding:1px 6px;border-radius:4px;font-weight:600}
+  .row .v{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;cursor:text;padding:2px 6px;border-radius:6px;border:1px solid transparent;min-width:92px;text-align:right}
+  .row .v:hover{border-color:var(--line-strong);background:var(--surface-2)}
+  .row .v.zero{color:var(--ink-faint)}
+  .row .v.derived{color:var(--ink);cursor:default;position:relative}
+  .row .v.derived::after{content:"auto";position:absolute;right:0;top:-12px;font-family:"IBM Plex Sans";font-size:8px;letter-spacing:.1em;color:var(--brass);text-transform:uppercase}
+  .row input.edit{font-family:"IBM Plex Mono",monospace;font-size:14px;width:116px;text-align:right;border:1px solid var(--brass);border-radius:6px;padding:2px 6px;outline:none;background:#fff}
+  .subhead{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);padding:14px 0 2px;font-weight:600}
+  .subhead:first-child{padding-top:6px}
+
+  /* ---------- RE at a glance (overview) ---------- */
+  .reglance{margin-top:14px}
+  .reglance .gl-top{display:flex;justify-content:space-between;align-items:baseline;padding:15px 20px 0}
+  .reglance .gl-top a{font-size:12.5px;color:var(--brass-deep);font-weight:600;cursor:pointer}
+  .reglance .gl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px 20px 4px}
+  .reglance .gs .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .reglance .gs .n{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;margin-top:3px}
+  .reglance .gs .n.pos{color:var(--green)}
+  .pf-ribbon{padding:6px 20px 18px}
+  .pf-ribbon .rb{height:14px;border-radius:7px;overflow:hidden;display:flex;background:var(--surface-2);border:1px solid var(--line)}
+  .pf-ribbon .rb i{height:100%}
+  .pf-ribbon .rb .eq{background:var(--green)}
+  .pf-ribbon .rb .debt{background:repeating-linear-gradient(45deg,var(--brick-soft),var(--brick-soft) 4px,#d09a8d 4px,#d09a8d 8px)}
+  .pf-ribbon .cap{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);margin-top:7px}
+
+  /* ---------- Real estate view ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .stat .lab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+  .stat .val{font-family:"Fraunces",serif;font-size:24px;font-weight:500;letter-spacing:-.01em}
+  .stat .meta{font-size:11.5px;color:var(--ink-soft);margin-top:4px}
+  .stat .meta.pos{color:var(--green)}
+  .toolbar{display:flex;gap:7px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .toolbar .chip{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:6px 13px;border-radius:18px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+  .toolbar .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .toolbar .sep{flex:1}
+  .toolbar .count{font-size:12px;color:var(--ink-faint)}
+
+  .props{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .prop{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .14s,transform .14s,box-shadow .14s;box-shadow:var(--shadow)}
+  .prop:hover{border-color:var(--brass);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .prop .pr-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px}
+  .prop .addr{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .prop .addr .owner{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--brass-deep);background:rgba(168,126,51,.12);padding:1px 6px;border-radius:4px;font-weight:600}
+  .prop .addr .alert{font-size:9.5px;color:var(--brick);background:rgba(158,75,58,.1);padding:1px 6px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .prop .pr-val{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;text-align:right;white-space:nowrap}
+  .prop .pr-val small{display:block;font-size:10.5px;color:var(--ink-faint);font-weight:400}
+  .lev{height:10px;border-radius:5px;overflow:hidden;display:flex;background:var(--surface-2);border:1px solid var(--line)}
+  .lev i{height:100%;display:block}
+  .lev .eq{background:var(--green)}
+  .lev .debt{background:repeating-linear-gradient(45deg,var(--brick-soft),var(--brick-soft) 4px,#d09a8d 4px,#d09a8d 8px)}
+  .prop .pr-foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);margin-top:7px}
+  .prop .pr-foot .cf.pos{color:var(--green);font-weight:600}
+  .prop .pr-foot .cf.neg{color:var(--brick);font-weight:600}
+
+  /* ---------- Drawer ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(17,48,42,.34);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+  .scrim.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:440px;max-width:92vw;background:var(--surface);box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.1,1);z-index:50;display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .drawer .dh{padding:22px 24px 16px;border-bottom:1px solid var(--line);background:linear-gradient(150deg,var(--ink),var(--ink-2));color:#EAF1EE}
+  .drawer .dh .close{all:unset;cursor:pointer;float:right;font-size:22px;color:#9FB6AE;line-height:1}
+  .drawer .dh .close:hover{color:#fff}
+  .drawer .dh .daddr{font-family:"Fraunces",serif;font-size:21px;font-weight:500}
+  .drawer .dh .dmeta{font-size:12px;color:#9FB6AE;margin-top:5px}
+  .drawer .dstat{display:flex;gap:22px;margin-top:14px}
+  .drawer .dstat div{font-size:11px;color:#8FA59D}
+  .drawer .dstat div b{display:block;font-family:"IBM Plex Mono",monospace;font-size:16px;color:#EAF1EE;font-weight:500;margin-top:2px}
+  .drawer .db{padding:20px 24px;overflow-y:auto;flex:1}
+  .field{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .field label{font-size:13px;color:var(--ink-soft)}
+  .field input{font-family:"IBM Plex Mono",monospace;font-size:13.5px;text-align:right;width:136px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px;outline:none;background:#fff}
+  .field input:focus{border-color:var(--brass)}
+  .leasehead{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:20px 0 6px}
+  .lease{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border:1px solid var(--line);border-radius:9px;margin-bottom:7px;font-size:13px}
+  .lease.expired{background:rgba(158,75,58,.05);border-color:var(--brick-soft)}
+  .lease .lu{font-weight:600}
+  .lease .ld{font-size:11px;color:var(--ink-soft)}
+  .lease .ld .x{color:var(--brick);font-weight:600}
+  .lease .lr{font-family:"IBM Plex Mono",monospace;font-weight:600}
+  .lease .lr.dim{color:var(--ink-faint);text-decoration:line-through}
+
+  /* ---------- Snapshots ---------- */
+  .snap-trend{display:flex;align-items:flex-end;gap:9px;height:150px;padding:18px 20px}
+  .snap-trend .bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;min-width:30px}
+  .snap-trend .bar .col{width:100%;max-width:46px;background:linear-gradient(180deg,var(--green),var(--green-soft));border-radius:5px 5px 0 0;transition:height .5s}
+  .snap-trend .bar .dt{font-size:10px;color:var(--ink-faint)}
+  .empty{padding:38px 20px;text-align:center;color:var(--ink-soft);font-size:13.5px}
+  .empty b{color:var(--ink);display:block;font-family:"Fraunces",serif;font-size:16px;font-weight:500;margin-bottom:6px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  .footnote{font-size:11.5px;color:var(--ink-faint);margin-top:16px;line-height:1.6;max-width:780px}
+  .footnote b{color:var(--ink-soft);font-weight:600}
+
+  /* editable ledger rows */
+  .row .kedit{font-family:"IBM Plex Sans";font-size:13.5px;color:var(--ink);border:1px solid transparent;border-radius:6px;padding:2px 6px;outline:none;background:transparent;width:auto;flex:1;min-width:0}
+  .row .kedit:hover,.row .kedit:focus{border-color:var(--line-strong);background:#fff}
+  .row .rgt{display:flex;align-items:center;gap:4px}
+  .row .del{all:unset;cursor:pointer;width:20px;height:20px;border-radius:5px;display:grid;place-items:center;color:var(--ink-faint);font-size:15px;line-height:1;transition:.12s}
+  .row .del:hover{background:rgba(158,75,58,.12);color:var(--brick)}
+  .addbtn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--brass-deep);padding:7px 4px 2px;opacity:.85}
+  .addbtn:hover{opacity:1}
+  .addbtn .pl{width:15px;height:15px;border:1px dashed var(--brass);border-radius:4px;display:grid;place-items:center;font-size:12px}
+
+  /* drawer form */
+  .field select,.field input[type=text],.field input[type=date]{font-family:"IBM Plex Sans";font-size:13px;text-align:left}
+  .field input[type=text],.field select,.field input[type=date]{width:200px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 9px;outline:none;background:#fff}
+  .field input:focus,.field select:focus{border-color:var(--brass)}
+  .dsection{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin:20px 0 4px}
+  .dsection:first-child{margin-top:0}
+  .lease-edit{margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .lease-edit:last-of-type{border-bottom:none}
+  .le-grid{display:grid;grid-template-columns:50px 1fr 1fr 78px 22px;gap:6px;align-items:center}
+  .le-grid input{font-family:"IBM Plex Sans";font-size:12px;border:1px solid var(--line-strong);border-radius:7px;padding:6px 7px;outline:none;background:#fff;width:100%}
+  .le-grid input[type=number]{font-family:"IBM Plex Mono",monospace;text-align:right}
+  .le-grid input:focus{border-color:var(--brass)}
+  .lease-edit.exp .le-grid input{background:rgba(158,75,58,.05)}
+  .le-grid .del{all:unset;cursor:pointer;text-align:center;color:var(--ink-faint);font-size:15px}
+  .le-grid .del:hover{color:var(--brick)}
+  .le-mtm{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--ink-soft);margin-top:7px;cursor:pointer}
+  .le-mtm input{width:14px;height:14px;accent-color:var(--green);flex:0 0 14px}
+  .le-mtm.static{color:var(--ink-faint);cursor:default}
+  .lease-cols{display:grid;grid-template-columns:50px 1fr 1fr 78px 22px;gap:6px;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px;padding:0 2px}
+  .btn.danger{border:1px solid var(--brick-soft);color:var(--brick);background:transparent;width:100%;text-align:center;margin-top:24px}
+  .btn.danger:hover{background:rgba(158,75,58,.08)}
+  .edithint{font-size:11.5px;color:var(--ink-faint);padding:4px 0 0}
+
+  /* ---------- Auth / login ---------- */
+  .auth-wall{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;z-index:100;padding:24px}
+  .auth-wall.hidden{display:none}
+  .auth-box{width:100%;max-width:380px;background:#182F29;border:1px solid rgba(168,126,51,.2);border-radius:18px;padding:36px 32px;box-shadow:var(--shadow-lg)}
+  .auth-box .ab-mark{font-family:"Fraunces",serif;font-size:22px;font-weight:600;color:#fff;display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .auth-box .ab-mark .seal{width:26px;height:26px;border:1.5px solid var(--brass);border-radius:50%;display:grid;place-items:center;font-size:12px;color:var(--brass-lt);font-weight:700}
+  .auth-box .ab-sub{font-size:12px;color:var(--green-soft);letter-spacing:.14em;text-transform:uppercase;margin-bottom:30px}
+  .auth-box label{display:block;font-size:12px;color:#8FA59D;font-weight:600;margin-bottom:20px}
+  .auth-box label span{display:block;margin-bottom:6px}
+  .auth-box input{width:100%;background:#0F261F;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:11px 13px;font-size:14px;color:#EAF1EE;font-family:"IBM Plex Sans";outline:none}
+  .auth-box input:focus{border-color:var(--brass)}
+  .auth-box .sign-btn{all:unset;cursor:pointer;display:block;width:100%;text-align:center;background:var(--brass);color:#fff;font-size:14px;font-weight:700;padding:13px;border-radius:10px;margin-top:22px;transition:.15s}
+  .auth-box .sign-btn:hover{background:var(--brass-deep)}
+  .auth-box .auth-err{font-size:12.5px;color:#E5AD9F;margin-top:14px;text-align:center;min-height:18px}
+  .auth-box .auth-spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:7px}
+
+  /* sidebar user section */
+  .user-pill{padding:12px 12px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:auto;display:flex;align-items:center;gap:9px}
+  .user-pill .ue{flex:1;font-size:11.5px;color:#8FA59D;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .user-pill button{all:unset;cursor:pointer;font-size:11px;color:#586C65;font-weight:600;padding:4px 8px;border:1px solid rgba(255,255,255,.08);border-radius:6px}
+  .user-pill button:hover{color:#C5D2CC;border-color:rgba(255,255,255,.2)}
+
+  /* save indicator */
+  .save-dot{width:7px;height:7px;border-radius:50%;background:var(--green);position:fixed;bottom:18px;right:18px;opacity:0;transition:.4s;z-index:30}
+  .save-dot.show{opacity:1}
+
+  /* ---------- Accounts ---------- */
+  .agroup{margin-bottom:20px}
+  .agroup .gh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .agroup .gh .gt{font-family:"Fraunces",serif;font-size:16px;font-weight:500}
+  .agroup .gh .gsum{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-soft)}
+  .accts{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .acct{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer;transition:border-color .14s,transform .14s,box-shadow .14s;box-shadow:var(--shadow);display:flex;justify-content:space-between;gap:12px}
+  .acct:hover{border-color:var(--brass);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .acct .an{font-weight:600;font-size:14px}
+  .acct .ai{font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+  .acct .ai .kch{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--brass-deep);background:rgba(168,126,51,.12);padding:1px 6px;border-radius:4px;font-weight:600;margin-right:6px}
+  .acct .ai .kch.lo{color:var(--brick);background:rgba(158,75,58,.1)}
+  .acct.exd{opacity:.55}
+  .acct .ai .kch.ex{color:var(--ink-faint);background:var(--surface-2)}
+  .acct .ab{text-align:right;white-space:nowrap}
+  .acct .ab .bal{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
+  .acct .ab .bal.neg{color:var(--brick)}
+  .acct .ab .upd{font-size:10.5px;color:var(--ink-faint);margin-top:3px}
+  .acct .ab .ldetail{font-size:10.5px;color:var(--ink-soft);margin-top:3px}
+
+  /* ---------- Import modal ---------- */
+  .modal.wide{width:560px}
+  .dropzone{border:1.5px dashed var(--line-strong);border-radius:11px;padding:22px;text-align:center;cursor:pointer;transition:.15s;background:var(--surface-2)}
+  .dropzone:hover{border-color:var(--brass);background:#fff}
+  .dropzone b{display:block;font-size:14px;color:var(--ink);font-weight:600}
+  .dropzone span{font-size:12px;color:var(--ink-faint)}
+  .impstatus{font-size:12.5px;color:var(--ink-soft);padding:10px 0 2px;display:flex;align-items:center;gap:8px}
+  .impstatus .spin{width:13px;height:13px;border:2px solid var(--line-strong);border-top-color:var(--brass);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .improw{display:grid;grid-template-columns:1fr 110px 170px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .improw .in{font-weight:600}
+  .improw .ii{font-size:11px;color:var(--ink-soft)}
+  .improw .iv{font-family:"IBM Plex Mono",monospace;font-weight:600;text-align:right}
+  .improw select{font-family:"IBM Plex Sans";font-size:12px;border:1px solid var(--line-strong);border-radius:7px;padding:6px;outline:none;background:#fff;width:100%}
+  .improw select:focus{border-color:var(--brass)}
+  .privnote{font-size:11px;color:var(--ink-faint);margin-top:10px;line-height:1.5}
+
+  /* ---------- Export modal ---------- */
+  .mscrim{position:fixed;inset:0;background:rgba(17,48,42,.34);opacity:0;pointer-events:none;transition:.2s;z-index:70}
+  .mscrim.show{opacity:1;pointer-events:auto}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:420px;max-width:92vw;background:var(--surface);border-radius:15px;box-shadow:var(--shadow-lg);z-index:80;opacity:0;pointer-events:none;transition:.2s;overflow:hidden}
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+  .modal .mh{background:linear-gradient(150deg,var(--ink),var(--ink-2));color:#EAF1EE;padding:20px 24px}
+  .modal .mh h3{font-family:"Fraunces",serif;font-weight:500;font-size:19px}
+  .modal .mh p{font-size:12px;color:#9FB6AE;margin-top:4px}
+  .modal .mb{padding:20px 24px}
+  .modal label.fld{display:block;font-size:12px;color:var(--ink-soft);font-weight:600;margin-bottom:14px}
+  .modal label.fld input[type=text],.modal label.fld input[type=date]{display:block;width:100%;margin-top:5px;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;font-size:14px;font-family:"IBM Plex Sans";outline:none;background:#fff}
+  .modal label.fld input:focus{border-color:var(--brass)}
+  .exp-opts{display:flex;flex-direction:column;gap:9px;margin:4px 0 6px;padding:12px 0;border-top:1px solid var(--line)}
+  .exp-opts label{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-soft);cursor:pointer}
+  .exp-opts input{accent-color:var(--green);width:15px;height:15px}
+  .modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:8px}
+
+  /* ---------- Printable report ---------- */
+  #print-report{display:none}
+  .rpt{font-family:"IBM Plex Sans",serif;color:#111;background:#fff;font-size:11px;line-height:1.4}
+  .rpt .rhead{border-bottom:2px solid #11302A;padding-bottom:12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-end}
+  .rpt .rmark{font-family:"Fraunces",serif;font-size:13px;letter-spacing:.04em;color:#7C5A1D;font-weight:600;text-transform:uppercase}
+  .rpt .rtitle{font-family:"Fraunces",serif;font-size:24px;font-weight:500;color:#11302A;margin-top:2px}
+  .rpt .rmeta{text-align:right;font-size:11px;color:#46584F;line-height:1.6}
+  .rpt .rmeta b{color:#111}
+  .rpt .rnw{display:flex;justify-content:space-between;background:#F3F1EA;border:1px solid #CDC9BB;border-radius:8px;padding:12px 16px;margin:14px 0 18px}
+  .rpt .rnw .big{font-family:"Fraunces",serif}
+  .rpt .rnw .l{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#8B958D}
+  .rpt .rnw .n{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;margin-top:3px}
+  .rpt .rnw .n.big{font-family:"Fraunces",serif;font-size:24px;color:#11302A}
+  .rpt .rcols{display:flex;gap:26px}
+  .rpt .rcol{flex:1}
+  .rpt h4{font-family:"Fraunces",serif;font-size:14px;font-weight:600;color:#11302A;border-bottom:1px solid #11302A;padding-bottom:4px;margin-bottom:6px}
+  .rpt .rsub{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8B958D;font-weight:600;margin:10px 0 2px}
+  .rpt .rline{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dotted #DDD9CC}
+  .rpt .rline .v{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  .rpt .rtot{display:flex;justify-content:space-between;padding:6px 0;border-top:1.5px solid #11302A;margin-top:4px;font-weight:700;font-size:12px}
+  .rpt .rtot .v{font-family:"IBM Plex Mono",monospace}
+  .rpt .rtot.assets .v{color:#2E7A62}.rpt .rtot.liab .v{color:#9E4B3A}
+  .rpt table{width:100%;border-collapse:collapse;margin-top:8px;font-size:9.5px}
+  .rpt th{text-align:right;font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:#8B958D;border-bottom:1.5px solid #11302A;padding:5px 6px;font-weight:600}
+  .rpt th:first-child,.rpt td:first-child{text-align:left}
+  .rpt td{text-align:right;padding:5px 6px;border-bottom:1px solid #EAE7DC;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  .rpt td.txt{font-family:"IBM Plex Sans"}
+  .rpt tr.totrow td{border-top:1.5px solid #11302A;border-bottom:none;font-weight:700;color:#11302A;padding-top:7px}
+  .rpt td .exp{color:#9E4B3A;font-size:8px}
+  .rpt .rfoot{margin-top:18px;padding-top:10px;border-top:1px solid #CDC9BB;font-size:9px;color:#8B958D;line-height:1.6}
+  .rpt .page-break{break-before:page;page-break-before:always;padding-top:8px}
+
+  @media print{
+    aside,main,.drawer,.scrim,.toast,.modal,.mscrim{display:none !important}
+    #print-report{display:block !important}
+    body{background:#fff;display:block}
+    @page{margin:0.55in 0.5in}
+  }
+
+  @media(max-width:980px){
+    .rail{grid-template-columns:repeat(3,1fr)}
+    .rail .k:nth-child(3){border-right:none}
+    .props{grid-template-columns:1fr}
+  }
+  @media(max-width:860px){
+    body{flex-direction:column}
+    aside{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:12px 16px;gap:12px;flex-wrap:wrap}
+    .brand{border:none;padding:0;flex:1}.brand .sub,.as-of{display:none}
+    nav{flex-direction:row;margin:0;flex-wrap:wrap}.nav .group-label,nav .group-label{display:none}
+    main{padding:22px 18px 60px}
+    .grid.two{grid-template-columns:1fr}
+    .stats,.reglance .gl-stats{grid-template-columns:1fr 1fr}
+    .hmetrics{grid-template-columns:repeat(2,1fr)}
+    .hero .nw{font-size:40px}
+  }
+  @media(max-width:560px){.rail{grid-template-columns:1fr 1fr}.rail .k{border-right:none}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">
+    <div class="mark"><span class="seal">C</span>Chance Wealth</div>
+    <div class="sub">Family Financial Picture</div>
+  </div>
+  <nav id="nav">
+    <div class="group-label">Overview</div>
+    <button data-view="overview" class="active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13h8V3H3zM13 21h8V8h-8zM3 21h8v-5H3zM13 4h8"/></svg>Net Worth</button>
+    <div class="group-label">Holdings</div>
+    <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
+    <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
+    <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
+  </nav>
+  <div class="as-of">Reconciled as of<b id="asof">—</b></div>
+  <div class="user-pill" id="userPill" style="display:none">
+    <div class="ue" id="userEmail"></div>
+    <button id="logoutBtn">Sign out</button>
+  </div>
+</aside>
+
+<main>
+  <!-- OVERVIEW -->
+  <section class="view active" id="view-overview">
+    <div class="topbar">
+      <div><div class="eyebrow">Personal Net Worth Statement</div><h1>The Full Picture</h1></div>
+      <div class="actions">
+        <button class="btn ghost" id="editToggle">Edit values</button>
+        <button class="btn ghost" id="exportBtn">Export PDF</button>
+        <button class="btn primary" id="snapBtn">Save snapshot</button>
+      </div>
+    </div>
+
+    <div class="stagger">
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="lab">Net Worth</div>
+            <div class="nw" id="heroNW">—</div>
+            <div class="rule"></div>
+            <div class="delta" id="heroDelta"></div>
+          </div>
+          <div class="hmetrics">
+            <div class="hm"><div class="l">Total Assets</div><div class="n up" id="hmAssets">—</div></div>
+            <div class="hm"><div class="l">Total Liabilities</div><div class="n down" id="hmLiab">—</div></div>
+            <div class="hm"><div class="l">Debt-to-Asset</div><div class="n" id="hmDTA">—</div></div>
+            <div class="hm"><div class="l">Liquid Cash</div><div class="n" id="hmCash">—</div></div>
+          </div>
+        </div>
+        <div class="compbar" id="compbar"></div>
+        <div class="compkey">
+          <span><i style="background:#8DD3BC"></i>Cash &amp; liquid</span>
+          <span><i style="background:#A87E33"></i>Real estate</span>
+          <span><i style="background:#C9D6D0"></i>Long-term &amp; business</span>
+        </div>
+      </div>
+
+      <div class="rail" id="rail"></div>
+
+      <div class="grid two">
+        <div class="card"><h2>Assets <span class="tot assets" id="totAssets">—</span></h2><div class="ledger" id="ledgerAssets"></div></div>
+        <div class="card"><h2>Liabilities <span class="tot liab" id="totLiab">—</span></h2><div class="ledger" id="ledgerLiab"></div></div>
+      </div>
+
+      <div class="card reglance">
+        <div class="gl-top">
+          <h2 style="padding:0">Real Estate at a Glance</h2>
+          <a id="gotoRE">View portfolio →</a>
+        </div>
+        <div class="gl-stats" id="glStats"></div>
+        <div class="pf-ribbon" id="pfRibbon"></div>
+      </div>
+    </div>
+    <p class="footnote" id="ovFoot"></p>
+  </section>
+
+  <!-- REAL ESTATE -->
+  <section class="view" id="view-realestate">
+    <div class="topbar">
+      <div><div class="eyebrow">Real Estate Owned · Bossier Parish</div><h1>Property Portfolio</h1></div>
+    </div>
+    <div class="stats stagger" id="reStats"></div>
+    <div class="toolbar" id="reTools">
+      <button class="chip on" data-filter="all">All</button>
+      <button class="chip" data-filter="investment">Investment</button>
+      <button class="chip" data-filter="residential">Residential</button>
+      <span class="sep"></span>
+      <span class="count" id="reCount"></span>
+      <button class="btn primary" id="addProp">+ Add property</button>
+    </div>
+    <div class="props" id="portfolio"></div>
+    <p class="footnote" id="reFoot"></p>
+  </section>
+
+  <!-- ACCOUNTS -->
+  <section class="view" id="view-accounts">
+    <div class="topbar">
+      <div><div class="eyebrow">Banking · Deposits &amp; Loans</div><h1>Accounts</h1></div>
+      <div class="actions">
+        <button class="btn ghost" id="addAcct">+ Add account</button>
+        <button class="btn primary" id="impBtn">Update from screenshots</button>
+      </div>
+    </div>
+    <div class="stats stagger" id="acctStats"></div>
+    <div id="acctGroups"></div>
+    <p class="footnote">Each account rolls into the statement automatically by its type and entity: personal deposits into Cash &amp; Equivalents, business deposits into Business Accounts, loans and credit lines into Liabilities. Click any account to edit details or add loan terms.</p>
+  </section>
+
+  <!-- SNAPSHOTS -->
+  <section class="view" id="view-snapshots">
+    <div class="topbar">
+      <div><div class="eyebrow">Tracked Over Time</div><h1>Net Worth Trend</h1></div>
+      <div class="actions"><button class="btn primary" id="snapBtn2">Save snapshot now</button></div>
+    </div>
+    <div class="card"><div class="snap-trend" id="snapTrend"></div><div class="ledger" id="snapList"></div></div>
+    <p class="footnote">Each snapshot freezes today's reconciled net worth with a date stamp. Save one whenever a balance changes — a loan paydown, a new lease, a revalued property — and the trend builds itself.</p>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+  <div class="dh">
+    <button class="close" id="drawerClose">&times;</button>
+    <div class="daddr" id="dAddr">—</div>
+    <div class="dmeta" id="dMeta">—</div>
+    <div class="dstat" id="dStat"></div>
+  </div>
+  <div class="db" id="drawerBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+<datalist id="ownerList">
+  <option value="Joint"></option><option value="JamFam"></option><option value="TLChance"></option><option value="2nd Chance"></option>
+</datalist>
+
+<div class="mscrim" id="expScrim"></div>
+<div class="modal" id="expModal">
+  <div class="mh"><h3>Export financial statement</h3><p>Generates a clean PDF for your banker or accountant.</p></div>
+  <div class="mb">
+    <label class="fld">Name on statement<input type="text" id="expName" value="Chance Family"></label>
+    <label class="fld">Statement date<input type="date" id="expDate"></label>
+    <label class="fld">Prepared for (optional)<input type="text" id="expFor" placeholder="e.g. First Horizon Bank"></label>
+    <div class="exp-opts">
+      <label><input type="checkbox" id="optNW" checked> Net worth statement</label>
+      <label><input type="checkbox" id="optRE" checked> Real estate schedule</label>
+      <label><input type="checkbox" id="optRoll" checked> Rent roll (active leases)</label>
+      <label><input type="checkbox" id="optAcct" checked> Bank accounts &amp; loans schedule</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="expCancel">Cancel</button>
+      <button class="btn primary" id="expGo">Generate PDF</button>
+    </div>
+  </div>
+</div>
+
+<div id="print-report"></div>
+
+<div class="mscrim" id="impScrim"></div>
+<div class="modal wide" id="impModal">
+  <div class="mh"><h3>Update balances from screenshots</h3><p>Claude reads your screenshots and proposes updates — nothing changes until you confirm.</p></div>
+  <div class="mb">
+    <div class="dropzone" id="impZone"><b>Choose screenshot(s)</b><span>Bank app or website screenshots · PNG or JPG · several at once is fine</span></div>
+    <input type="file" id="impFiles" accept="image/*" multiple style="display:none">
+    <div class="impstatus" id="impStatus" style="display:none"></div>
+    <div id="impReview"></div>
+    <p class="privnote">Tip: only account names and balances are needed — feel free to crop out account numbers before uploading.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="impCancel">Cancel</button>
+      <button class="btn primary" id="impApply" style="display:none">Apply updates</button>
+    </div>
+  </div>
+</div>
+<datalist id="entityList">
+  <option value="Personal"></option><option value="2nd Chance Speed Shop"></option><option value="2nd Chance Motors"></option><option value="Chance Builders LLC"></option><option value="Chance Classics"></option><option value="A Chance"></option><option value="A Chance Realty"></option><option value="TLChance"></option><option value="JamFam"></option>
+</datalist>
+
+<div class="save-dot" id="saveDot"></div>
+
+<!-- Login wall -->
+<div class="auth-wall" id="authWall">
+  <div class="auth-box">
+    <div class="ab-mark"><span class="seal">C</span>Chance Wealth</div>
+    <div class="ab-sub">Personal Financial Picture</div>
+    <label><span>Email</span><input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email"></label>
+    <label><span>Password</span><input type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password"></label>
+    <button class="sign-btn" id="loginBtn">Sign in</button>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
+<script>
+/* ── Supabase ─────────────────────────────────────────────── */
+const SUPABASE_URL  = 'https://hkvlvbalojjirzlojvfi.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhrdmx2YmFsb2pqaXJ6bG9qdmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMDMzNzEsImV4cCI6MjA5NDY3OTM3MX0.e_9SMBEAaZkyz4ZK0EQk5fW24Ub0npibYmFBAySIRRw';
+const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let _user = null;
+
+/* ── Constants ───────────────────────────────────────────── */
+const TODAY = new Date('2026-06-09');
+const SEED_ACCOUNTS=[
+  {id:'co1',name:'Simply Checking',institution:'Capital One',kind:'checking',entity:'Personal',balance:8872.45,updated:'2026-06-09'},
+  {id:'co2',name:'Savings Now',institution:'Capital One',kind:'savings',entity:'Personal',balance:5042.87,updated:'2026-06-09'},
+  {id:'co3',name:'A Chance Checking',institution:'Capital One',kind:'checking',entity:'A Chance',balance:4060.06,updated:'2026-06-09'},
+  {id:'co4',name:'A Chance Savings',institution:'Capital One',kind:'savings',entity:'A Chance',balance:25120.46,updated:'2026-06-09'},
+  {id:'hf1',name:'TL Chance Properties',institution:'Home Federal',kind:'checking',entity:'TLChance',balance:29903.69,updated:'2026-06-09'},
+  {id:'hf2',name:'2nd Chance Motors',institution:'Home Federal',kind:'checking',entity:'2nd Chance Motors',balance:7246.34,updated:'2026-06-09',notes:'Available showed $490.46 vs $7,246.34 current — verify holds'},
+  {id:'hf3',name:'Chance Classics LLC',institution:'Home Federal',kind:'checking',entity:'Chance Classics',balance:5010.26,updated:'2026-06-09'},
+  {id:'hf4',name:'Chance Builders LLC',institution:'Home Federal',kind:'checking',entity:'Chance Builders',balance:29001.60,updated:'2026-06-09'},
+  {id:'ln1',name:'2nd Chance Motors LOC',institution:'Home Federal',kind:'loan',entity:'2nd Chance Motors',balance:240956.63,rate:6.75,maturity:'2026-10-15',updated:'2026-06-09',notes:'~$250k line, $9,043.37 available. Replaces the old 2nd Chance $246,000 line. Matures Oct 2026.'},
+  {id:'ln2',name:'A Chance Realty — Construction',institution:'Home Federal',kind:'checking',entity:'A Chance Realty',balance:237181.80,updated:'2026-06-09',notes:'Construction/building deposit account — $15,328.72 showed as available, balance likely committed to draws'},
+  {id:'ln3',name:'Operating Line of Credit',institution:'Home Federal',kind:'credit',entity:'TLChance',balance:520250.21,rate:6.75,payment:2988.59,maturity:'2027-02-12',updated:'2026-06-09',notes:'Operating LOC secured by 118 5th & 332 Tanyard — currently carrying 3 Parc lots and a flip house'},
+  {id:'ln4',name:'2403 Tillman St — Owner-Financed',institution:'b1BANK',kind:'loan',entity:'Personal',balance:193312.46,payment:1631.34,updated:'2026-06-09',excluded:true,notes:'2403 Tillman St, Bossier City — owner-financed to a friend; buyer pays the exact $1,631.34 note payment, so this is a wash and excluded from totals'},
+  {id:'cl1',name:'108/110 Sibley Line',institution:'Home Federal',kind:'credit',entity:'TLChance',balance:0,updated:'2026-06-09',notes:'$160,000 available, undrawn'},
+  {id:'iv1',name:"Townes' IRA",institution:'Ameriprise',kind:'investment',entity:'Personal',balance:4634.88,updated:'2026-06-09'},
+  {id:'iv2',name:'Ashleys Roth',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:102829.42,updated:'2026-06-09'},
+  {id:'iv3',name:'Tims Traditional',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:38113.49,updated:'2026-06-09'},
+  {id:'iv4',name:'Ashleys SEP',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:224102.77,updated:'2026-06-09'},
+  {id:'iv5',name:'Townes College',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:55545.98,updated:'2026-06-09'},
+  {id:'iv6',name:'Townes Car',institution:'Ameriprise',kind:'investment',entity:'Personal',balance:21034.78,updated:'2026-06-09'},
+  {id:'iv7',name:'401(k) — Bonvenu ESOP Plan',institution:'Principal',kind:'investment',entity:'Personal',balance:95256.97,updated:'2026-06-09'},
+  {id:'iv8',name:'ESOP — Bonvenu Bancorp',institution:'Principal',kind:'investment',entity:'Personal',balance:118511.18,updated:'2026-06-09'},
+];
+const V2_PROP_LOANS={'118-5th':447934.43,'6356-hwy3':1068672.85,'108-sibley':559764.97,'110-sibley':610652.05};
+const SEED = {
+  asOf:'2026-06-09',
+  dataVersion:8,
+  cash:[{k:'Money Market',v:0},{k:"CD's",v:0},{k:'Cash on Hand',v:5000}],
+  accounts:SEED_ACCOUNTS,
+  physical:[{k:'Jewelry',v:40000},{k:'Automobile #1',v:100000},{k:'Automobile #2',v:45000},{k:"RV's, Boats, Etc.",v:25000},{k:'Furniture',v:0},{k:'Collectibles',v:0}],
+  longTerm:[{k:'2nd Chance',v:682000,tag:'business'},{k:'Cash Value Life Ins.',v:0}],
+  installment:[],
+  revolving:[],
+  properties:[
+    {id:'tanyard',addr:'332 Tanyard Trace',owner:'Joint',purchased:'2018-06-01',kind:'residential',use:'Primary residence',value:775000,loan:309821.28,payment:3245.40,taxes:5989.16,lender:'Rocket Mortgage / Lakeview',note:'2.5% fixed — loan #0711174615',leases:[]},
+    {id:'twin',addr:'331 Twin Point',owner:'JamFam',purchased:'2018-03-09',kind:'residential',use:'Second home',value:150000,loan:60000,payment:770,taxes:1003.18,lender:'Home Federal',leases:[]},
+    {id:'118-5th',addr:'118 5th Street',owner:'TLChance',purchased:'2019-04-16',kind:'investment',use:'Commercial',value:1125000,loan:447934.43,payment:3398.23,taxes:17176.97,lender:'Home Federal',leases:[{u:'A',begin:'2021-01-01',end:'2026-12-31',rent:4500},{u:'B',begin:'2025-06-01',end:'2028-05-31',rent:2000},{u:'C',begin:'2021-03-01',end:'2026-02-28',rent:1500},{u:'2A',begin:'2026-06-01',end:'2027-05-31',rent:800},{u:'2B',begin:'2022-11-01',end:'2025-10-31',rent:0}]},
+    {id:'112-5th',addr:'112 5th Street',owner:'TLChance',purchased:'2021-03-12',kind:'investment',use:'Commercial',value:200000,loan:0,payment:0,taxes:886.65,lender:'Home Federal',leases:[{u:'Tenant',begin:'',end:'',rent:1500}]},
+    {id:'104-sibley',addr:'104 N Sibley',owner:'2nd Chance',purchased:'2016-02-08',kind:'investment',use:'Commercial',value:225000,loan:0,payment:0,taxes:760.10,lender:'—',leases:[{u:'Tenant',begin:'',end:'',rent:617}]},
+    {id:'6356-hwy3',addr:'6356 Hwy 3',owner:'TLChance',purchased:'2021-09-10',kind:'investment',use:'Commercial',value:1390000,loan:1068672.85,payment:6279,taxes:513.09,lender:'Home Federal',leases:[{u:'A',begin:'2026-06-01',end:'2029-05-31',rent:2100},{u:'B',begin:'2024-01-01',end:'2024-12-31',rent:2000},{u:'C&D',begin:'2024-01-01',end:'2028-12-13',rent:4300}]},
+    {id:'108-sibley',addr:'108 N Sibley',owner:'TLChance',purchased:'2021-11-08',kind:'investment',use:'Commercial',value:850000,loan:559764.97,payment:4000,taxes:139.18,lender:'—',note:'Prescribes 2028',leases:[{u:'Tenant',begin:'2025-01-01',end:'2029-12-31',rent:7000}]},
+    {id:'110-sibley',addr:'110 N Sibley',owner:'TLChance',purchased:'',kind:'investment',use:'Commercial',value:950000,loan:610652.05,payment:5000,taxes:0,lender:'—',leases:[{u:'C',begin:'2026-01-01',end:'2027-12-31',rent:2200},{u:'D',begin:'2026-01-01',end:'2027-12-31',rent:2200}]},
+    {id:'207-5th',addr:'207 5th Street',owner:'TLChance',purchased:'2022-09-01',kind:'investment',use:'Commercial',value:457000,loan:110000,payment:1796,taxes:1639.23,lender:'Home Federal',leases:[{u:'Tenant',begin:'2022-09-01',end:'2029-08-31',rent:2075}]},
+    {id:'6362-hwy3',addr:'6362 Hwy 3',owner:'TLChance',purchased:'2021-09-10',kind:'investment',use:'Commercial',value:215000,loan:0,payment:0,taxes:645.44,lender:'—',leases:[{u:'Tenant',begin:'2024-03-01',end:'2029-02-28',rent:2000}]},
+    {id:'210-5th',addr:'210 5th Street',owner:'TLChance',purchased:'2024-10-07',kind:'investment',use:'Commercial',value:245000,loan:255510,payment:1100,taxes:0,lender:'B1 Bank',leases:[{u:'Tenant',begin:'2025-02-01',end:'2026-01-31',rent:1000}]},
+    {id:'parc-sequoia',addr:'313 Sequoia Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:84000,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+    {id:'parc-denali-206',addr:'206 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+    {id:'parc-denali-224',addr:'224 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+  ],
+  snapshots:[],
+};
+
+let state = JSON.parse(JSON.stringify(SEED));
+let editMode=false, propFilter='all', openId=null;
+
+/* ── Persistence (Supabase) ──────────────────────────────── */
+let _saveTimer=null;
+async function save(){
+  if(!_user)return;
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(async()=>{
+    try{
+      const{error}=await _sb.from('wealth_data').upsert({user_id:_user.id,data:state,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error)throw error;
+      const dot=document.getElementById('saveDot');dot.classList.add('show');setTimeout(()=>dot.classList.remove('show'),1200);
+    }catch(e){console.error('Save failed:',e);}
+  },800);
+}
+async function load(){
+  if(!_user)return;
+  try{
+    const{data,error}=await _sb.from('wealth_data').select('data').eq('user_id',_user.id).maybeSingle();
+    if(data?.data)state=data.data;
+  }catch(e){console.error('Load error:',e);}
+  runMigrations();
+  renderAll();
+}
+function runMigrations(){
+  if(!state.accounts){state.accounts=[];
+    for(let i=state.cash.length-1;i>=0;i--){const c=state.cash[i],n=c.k.toLowerCase();
+      if(n.includes('checking')||n.includes('savings')){state.accounts.unshift({id:'a'+Date.now()+i,name:c.k,institution:'',kind:n.includes('sav')?'savings':'checking',entity:'Personal',balance:c.v,updated:state.asOf});state.cash.splice(i,1);}}}
+  if(!state.dataVersion||state.dataVersion<2){
+    state.accounts=state.accounts.filter(a=>a.id!=='a-chk'&&a.id!=='a-sav');
+    SEED_ACCOUNTS.forEach(n=>{if(!state.accounts.some(a=>a.id===n.id))state.accounts.push(JSON.parse(JSON.stringify(n)));});
+    state.longTerm=(state.longTerm||[]).filter(x=>!['401(k)',"IRA's",'Brokerage','College Savings'].includes(x.k));
+    state.installment=(state.installment||[]).filter(x=>x.k!=='2nd Chance');
+    (state.properties||[]).forEach(p=>{if(V2_PROP_LOANS[p.id]!=null)p.loan=V2_PROP_LOANS[p.id];});
+    state.dataVersion=2;save();}
+  if(state.dataVersion<3){
+    const l3=state.accounts.find(a=>a.id==='ln3');
+    if(l3){l3.kind='credit';l3.name='Operating Line of Credit';l3.notes='Operating LOC secured by 118 5th & 332 Tanyard — currently carrying 3 Parc lots and a flip house';}
+    const l4=state.accounts.find(a=>a.id==='ln4');
+    if(l4){l4.excluded=true;l4.notes='Owner-financed property — buyer pays the exact note payment, so this is a wash and excluded from totals';}
+    state.dataVersion=3;save();}
+  if(state.dataVersion<4){
+    const t4=state.accounts.find(a=>a.id==='ln4');
+    if(t4){t4.name='2403 Tillman St — Owner-Financed';t4.notes='2403 Tillman St, Bossier City — owner-financed to a friend; buyer pays the exact $1,631.34 note payment, so this is a wash and excluded from totals';}
+    state.dataVersion=4;save();}
+  if(state.dataVersion<5){
+    const c5=state.accounts.find(a=>a.id==='ln2');
+    if(c5){c5.kind='checking';c5.notes='Construction/building deposit account — $15,328.72 showed as available, balance likely committed to draws';}
+    state.dataVersion=5;save();}
+  if(state.dataVersion<6){
+    const tn=state.properties.find(p=>p.id==='tanyard');
+    if(tn){tn.loan=309821.28;tn.payment=3245.40;tn.lender='Rocket Mortgage / Lakeview';tn.note='2.5% fixed — loan #0711174615';}
+    state.dataVersion=6;save();}
+  if(state.dataVersion<7){
+    const newLots=[
+      {id:'parc-sequoia',addr:'313 Sequoia Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:84000,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+      {id:'parc-denali-206',addr:'206 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+      {id:'parc-denali-224',addr:'224 Denali Drive',owner:'Chance Builders LLC',purchased:'',kind:'investment',use:'Vacant lot — The Parc',value:79950,loan:0,payment:0,taxes:0,lender:'',note:'Financed on operating LOC (ln3)',leases:[]},
+    ];
+    newLots.forEach(l=>{if(!state.properties.some(p=>p.id===l.id))state.properties.push(l);});
+    state.dataVersion=7;save();}
+  if(state.dataVersion<8){
+    ['parc-sequoia','parc-denali-206','parc-denali-224'].forEach(id=>{const p=state.properties.find(x=>x.id===id);if(p)p.owner='Chance Builders LLC';});
+    state.dataVersion=8;save();}
+}
+
+/* ── Auth ────────────────────────────────────────────────── */
+function showApp(user){
+  _user=user;
+  document.getElementById('authWall').classList.add('hidden');
+  document.getElementById('userPill').style.display='flex';
+  document.getElementById('userEmail').textContent=user.email;
+  load();
+}
+function showLogin(err){
+  document.getElementById('authWall').classList.remove('hidden');
+  if(err)document.getElementById('authErr').textContent=err;
+}
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pwd=document.getElementById('loginPwd').value;
+  const btn=document.getElementById('loginBtn');
+  btn.innerHTML='<span class="auth-spin"></span>Signing in…';btn.disabled=true;
+  document.getElementById('authErr').textContent='';
+  const{data,error}=await _sb.auth.signInWithPassword({email,password:pwd});
+  btn.innerHTML='Sign in';btn.disabled=false;
+  if(error){showLogin(error.message);return;}
+  showApp(data.user);
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('loginPwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await _sb.auth.signOut();location.reload();});
+_sb.auth.getSession().then(({data:{session}})=>{
+  if(session?.user)showApp(session.user);else showLogin();
+});
+
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fmtM=n=> n>=1e6? '$'+(n/1e6).toFixed(2)+'M' : n>=1e3? '$'+Math.round(n/1e3)+'K' : '$'+Math.round(n);
+const fmtDate=s=> s? new Date(s).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—';
+const leaseActive=l=> l.rent>0 && (l.mtm || !l.end || new Date(l.end)>=TODAY);
+const leaseStatus=l=> !leaseActive(l)?'Expired':((l.mtm||!l.end)?'Month-to-month':'Active');
+const activeRent=p=> p.leases.reduce((s,l)=>s+(leaseActive(l)?l.rent:0),0);
+const hasExpired=p=> p.leases.some(l=> l.rent>0 && l.end && !l.mtm && new Date(l.end)<TODAY);
+
+function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEach(p=>{value+=p.value;loan+=p.loan;rent+=activeRent(p);ds+=p.payment;tax+=p.taxes;});return{value,loan,equity:value-loan,rent,debtSvc:ds,cashflow:rent-ds,tax};}
+function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
+function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const phys=state.physical.reduce((s,x)=>s+x.v,0);const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
+
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderSnapshots();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+
+function renderHero(){
+  const t=totals();
+  document.getElementById('heroNW').textContent='$'+Math.floor(t.nw).toLocaleString('en-US');
+  document.getElementById('hmAssets').textContent=fmt(t.assets);
+  document.getElementById('hmLiab').textContent=fmt(t.liab);
+  document.getElementById('hmDTA').textContent=(t.liab/t.assets*100).toFixed(0)+'%';
+  document.getElementById('hmCash').textContent=fmt(t.cash);
+  const liquid=t.cash, re=t.re.value, lt=t.lt+t.phys, tot=liquid+re+lt;
+  document.getElementById('compbar').innerHTML=`<i style="width:${liquid/tot*100}%;background:#8DD3BC"></i><i style="width:${re/tot*100}%;background:#A87E33"></i><i style="width:${lt/tot*100}%;background:#C9D6D0"></i>`;
+  const s=state.snapshots, d=document.getElementById('heroDelta');
+  if(s.length){const last=s[s.length-1];const diff=t.nw-last.nw;d.innerHTML=`Since ${fmtDate(last.date)} &nbsp;<b style="color:${diff>=0?'#8DD3BC':'#E5AD9F'}">${diff>=0?'+':'−'}${fmt(Math.abs(diff))}</b>`;}
+  else d.innerHTML=`<span style="color:#8FA59D">No snapshots yet — save one to start tracking.</span>`;
+}
+
+function renderRail(){
+  const t=totals();
+  const items=[
+    {l:'Liquid Cash',n:fmt(t.cash),m:'checking, savings, on hand'},
+    {l:'Real Estate Equity',n:fmtM(t.re.equity),m:(t.re.equity/t.re.value*100).toFixed(0)+'% of value',cls:'pos'},
+    {l:'Investments / Retire',n:fmtM(t.invest),m:'401k, IRA, brokerage'},
+    {l:'Rental Income',n:fmt(t.re.rent),m:'/mo active leases'},
+    {l:'Net Property Cash Flow',n:fmt(t.re.cashflow),m:'/mo after debt',cls:t.re.cashflow>=0?'pos':'neg'},
+    {l:'Property Taxes',n:fmt(t.re.tax),m:'/yr across portfolio'},
+  ];
+  document.getElementById('rail').innerHTML=items.map(i=>`<div class="k"><div class="l">${i.l}</div><div class="n">${i.n}</div><div class="m ${i.cls||''}">${i.m}</div></div>`).join('');
+}
+
+const ADDLABEL={cash:'Add account',physical:'Add asset',longTerm:'Add holding',installment:'Add loan',revolving:'Add card or credit line'};
+function esc(s){return String(s).replace(/"/g,'&quot;');}
+function lineRow(item,group,idx,derived){
+  const zero=item.v===0?'zero':'';
+  const tag=item.tag==='business'?'<span class="tag">Business</span>':'';
+  if(derived) return `<div class="row"><span class="k">${item.k}</span><span class="v derived">${fmt(item.v)}</span></div>`;
+  if(editMode) return `<div class="row"><input class="kedit" value="${esc(item.k)}" data-g="${group}" data-i="${idx}" data-fld="k"><span class="rgt"><input class="edit" type="number" value="${item.v}" data-g="${group}" data-i="${idx}" data-fld="v"><button class="del" data-del="${group}" data-i="${idx}" title="Remove">&times;</button></span></div>`;
+  return `<div class="row"><span class="k">${item.k}${tag}</span><span class="v ${zero}">${fmt(item.v)}</span></div>`;
+}
+function addRow(group){return `<button class="addbtn" data-add="${group}"><span class="pl">+</span>${ADDLABEL[group]}</button>`;}
+
+function renderLedgers(){
+  const t=totals();
+  const isDep=x=>x.kind!=='loan'&&x.kind!=='credit'&&x.kind!=='investment';
+  let a=`<div class="subhead">Cash &amp; Equivalents</div>`;
+  if(state.accounts.some(x=>isDep(x)&&(x.entity||'Personal')==='Personal'))a+=lineRow({k:'Bank accounts',v:t.acct.persDep},'',0,true);
+  state.cash.forEach((x,i)=>a+=lineRow(x,'cash',i)); if(editMode)a+=addRow('cash');
+  a+=`<div class="subhead">Physical Assets</div>`;
+  state.physical.forEach((x,i)=>a+=lineRow(x,'physical',i)); if(editMode)a+=addRow('physical');
+  a+=lineRow({k:'Real Estate (all property)',v:t.re.value},'',0,true);
+  a+=`<div class="subhead">Long-Term &amp; Retirement</div>`;
+  if(state.accounts.some(x=>x.kind==='investment'))a+=lineRow({k:'Investment &amp; retirement accounts',v:t.acct.invest},'',0,true);
+  state.longTerm.forEach((x,i)=>a+=lineRow(x,'longTerm',i)); if(editMode)a+=addRow('longTerm');
+  if(state.accounts.some(x=>isDep(x)&&(x.entity||'Personal')!=='Personal'))a+=lineRow({k:'Business accounts',v:t.acct.bizDep},'',0,true);
+  document.getElementById('ledgerAssets').innerHTML=a;
+
+  let l=`<div class="subhead">Mortgages</div>`;
+  l+=lineRow({k:'All property loans',v:t.re.loan},'',0,true);
+  l+=`<div class="subhead">Installment Debt</div>`;
+  if(state.accounts.some(x=>x.kind==='loan'))l+=lineRow({k:'Bank loans',v:t.acct.loans},'',0,true);
+  state.installment.forEach((x,i)=>l+=lineRow(x,'installment',i)); if(editMode)l+=addRow('installment');
+  l+=`<div class="subhead">Revolving Debt</div>`;
+  if(state.accounts.some(x=>x.kind==='credit'))l+=lineRow({k:'Credit lines',v:t.acct.credit},'',0,true);
+  if(state.revolving.length) state.revolving.forEach((x,i)=>l+=lineRow(x,'revolving',i));
+  else if(!editMode&&!state.accounts.some(x=>x.kind==='credit')) l+=`<div class="row"><span class="k">Credit cards</span><span class="v zero">$0</span></div>`;
+  if(editMode)l+=addRow('revolving');
+  document.getElementById('ledgerLiab').innerHTML=l;
+
+  document.getElementById('totAssets').textContent=fmt(t.assets);
+  document.getElementById('totLiab').textContent=fmt(t.liab);
+  document.getElementById('ovFoot').innerHTML=`<b>Reconciled.</b> Every “auto” line is computed live — real-estate value and loans from the ${state.properties.length}-property schedule, bank, investment, and loan balances from the ${state.accounts.length} accounts on file. Update an account or a property and the statement re-states itself; the two can never drift apart.`;
+
+  if(editMode) wireLedgerEdits();
+}
+function refreshTotalsLite(){renderHero();renderRail();renderGlance();document.getElementById('totAssets').textContent=fmt(totals().assets);document.getElementById('totLiab').textContent=fmt(totals().liab);}
+function wireLedgerEdits(){
+  document.querySelectorAll('#ledgerAssets .kedit,#ledgerLiab .kedit,#ledgerAssets input.edit,#ledgerLiab input.edit').forEach(inp=>inp.addEventListener('input',e=>{
+    const g=e.target.dataset.g,i=+e.target.dataset.i,f=e.target.dataset.fld;
+    state[g][i][f]= f==='v'?(parseFloat(e.target.value)||0):e.target.value;
+    if(f==='v')refreshTotalsLite(); save();
+  }));
+  document.querySelectorAll('#ledgerAssets .del,#ledgerLiab .del').forEach(btn=>btn.addEventListener('click',e=>{
+    const g=e.currentTarget.dataset.del,i=+e.currentTarget.dataset.i; state[g].splice(i,1); renderLedgers(); refreshTotalsLite(); save();
+  }));
+  document.querySelectorAll('#ledgerAssets .addbtn,#ledgerLiab .addbtn').forEach(btn=>btn.addEventListener('click',e=>{
+    const g=e.currentTarget.dataset.add; state[g].push({k:'New item',v:0}); renderLedgers(); refreshTotalsLite(); save();
+  }));
+}
+
+function renderGlance(){
+  const t=reTotals();
+  document.getElementById('glStats').innerHTML=`
+    <div class="gs"><div class="l">Portfolio Value</div><div class="n">${fmt(t.value)}</div></div>
+    <div class="gs"><div class="l">Equity</div><div class="n pos">${fmt(t.equity)}</div></div>
+    <div class="gs"><div class="l">Rent / mo</div><div class="n">${fmt(t.rent)}</div></div>
+    <div class="gs"><div class="l">Net Cash Flow / mo</div><div class="n ${t.cashflow>=0?'pos':''}">${fmt(t.cashflow)}</div></div>`;
+  const eqPct=t.equity/t.value*100;
+  document.getElementById('pfRibbon').innerHTML=`<div class="rb"><i class="eq" style="width:${eqPct}%"></i><i class="debt" style="width:${100-eqPct}%"></i></div>
+    <div class="cap"><span>${eqPct.toFixed(0)}% equity · ${fmt(t.equity)}</span><span>${fmt(t.loan)} financed</span></div>`;
+}
+
+function renderRE(){
+  const t=reTotals();
+  document.getElementById('reStats').innerHTML=`
+    <div class="stat"><div class="lab">Portfolio Value</div><div class="val">${fmt(t.value)}</div><div class="meta">${state.properties.length} properties</div></div>
+    <div class="stat"><div class="lab">Total Equity</div><div class="val">${fmt(t.equity)}</div><div class="meta pos">${(t.equity/t.value*100).toFixed(0)}% owned outright</div></div>
+    <div class="stat"><div class="lab">Active Rent / mo</div><div class="val">${fmt(t.rent)}</div><div class="meta">${fmt(t.rent*12)} / yr</div></div>
+    <div class="stat"><div class="lab">Net Cash Flow / mo</div><div class="val">${fmt(t.cashflow)}</div><div class="meta pos">after ${fmt(t.debtSvc)} debt service</div></div>`;
+  let props=state.properties.slice();
+  if(propFilter!=='all') props=props.filter(p=>p.kind===propFilter);
+  document.getElementById('reCount').textContent=`${props.length} of ${state.properties.length} shown`;
+  document.getElementById('portfolio').innerHTML=props.map(p=>{
+    const eq=p.value-p.loan, eqPct=Math.max(0,eq)/p.value*100, debtPct=Math.min(100,p.loan/p.value*100);
+    const rent=activeRent(p), cf=rent-p.payment, exp=hasExpired(p);
+    return `<div class="prop" data-id="${p.id}">
+      <div class="pr-top"><div class="addr">${p.addr}<span class="owner">${p.owner}</span>${exp?'<span class="alert">lease expired</span>':''}${p.note?'<span class="alert" style="color:var(--brass-deep);background:rgba(168,126,51,.12)">'+p.note+'</span>':''}</div>
+      <div class="pr-val">${fmt(p.value)}<small>${fmt(eq)} equity</small></div></div>
+      <div class="lev"><i class="eq" style="width:${eqPct}%"></i><i class="debt" style="width:${debtPct}%"></i></div>
+      <div class="pr-foot"><span>${p.use} · ${rent>0?fmt(rent)+'/mo':'no active rent'}</span><span class="cf ${cf>=0?'pos':'neg'}">${cf>=0?'+':'−'}${fmt(Math.abs(cf))}/mo</span></div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.prop').forEach(el=>el.addEventListener('click',()=>openDrawer(el.dataset.id)));
+  document.getElementById('reFoot').innerHTML=`<b>Active rent</b> counts only leases whose term covers today (${fmtDate('2026-06-09')}); expired leases are flagged and excluded, so this reflects what's actually collectible.`;
+}
+
+function recomputeAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();save();}
+function renderDrawerHeader(p){
+  const eq=p.value-p.loan,rent=activeRent(p);
+  document.getElementById('dAddr').textContent=p.addr||'New property';
+  document.getElementById('dMeta').textContent=`${p.owner||'—'} · ${p.use||'—'}${p.purchased?' · acquired '+fmtDate(p.purchased):''}${p.lender&&p.lender!=='—'?' · '+p.lender:''}`;
+  document.getElementById('dStat').innerHTML=`<div>Equity<b>${fmt(eq)}</b></div><div>Active rent<b>${fmt(rent)}/mo</b></div><div>Net<b>${fmt(rent-p.payment)}/mo</b></div>`;
+}
+function renderDrawerBody(p){
+  let b=`<div class="dsection">Property details</div>
+    <div class="field"><label>Address</label><input type="text" data-f="addr" value="${esc(p.addr)}" placeholder="123 Main St"></div>
+    <div class="field"><label>Owner / entity</label><input type="text" data-f="owner" value="${esc(p.owner)}" list="ownerList"></div>
+    <div class="field"><label>Type</label><select data-f="kind"><option value="investment"${p.kind==='investment'?' selected':''}>Investment</option><option value="residential"${p.kind==='residential'?' selected':''}>Residential</option></select></div>
+    <div class="field"><label>Use / description</label><input type="text" data-f="use" value="${esc(p.use)}" placeholder="Commercial"></div>
+    <div class="field"><label>Purchase date</label><input type="date" data-f="purchased" value="${p.purchased||''}"></div>
+    <div class="field"><label>Lender</label><input type="text" data-f="lender" value="${esc(p.lender||'')}" placeholder="—"></div>
+    <div class="field"><label>Note (optional)</label><input type="text" data-f="note" value="${esc(p.note||'')}" placeholder="e.g. Prescribes 2028"></div>
+    <div class="dsection">Financials</div>
+    <div class="field"><label>Current value</label><input type="number" data-f="value" value="${p.value}"></div>
+    <div class="field"><label>Loan balance</label><input type="number" data-f="loan" value="${p.loan}"></div>
+    <div class="field"><label>Monthly payment</label><input type="number" data-f="payment" value="${p.payment}"></div>
+    <div class="field"><label>Annual taxes</label><input type="number" data-f="taxes" value="${p.taxes}"></div>
+    <div class="dsection">Leases · ${fmt(activeRent(p))}/mo active</div>`;
+  if(p.leases.length){
+    b+=`<div class="lease-cols"><span>Unit</span><span>Begin</span><span>End</span><span>Rent</span><span></span></div>`;
+    b+=p.leases.map((l,i)=>{const exp=!leaseActive(l);
+      const mtmRow = l.end
+        ? `<label class="le-mtm"><input type="checkbox" data-mtm="${i}" ${l.mtm?'checked':''}> Holds over month-to-month after end date${l.mtm?' · counted as active':''}</label>`
+        : `<div class="le-mtm static">Month-to-month — no fixed end date</div>`;
+      return `<div class="lease-edit ${exp?'exp':''}"><div class="le-grid"><input type="text" data-li="${i}" data-lf="u" value="${esc(l.u)}"><input type="date" data-li="${i}" data-lf="begin" value="${l.begin||''}"><input type="date" data-li="${i}" data-lf="end" value="${l.end||''}"><input type="number" data-li="${i}" data-lf="rent" value="${l.rent}"><button class="del" data-dellease="${i}" title="Remove">&times;</button></div>${mtmRow}</div>`;
+    }).join('');
+  }
+  b+=`<button class="addbtn" data-addlease><span class="pl">+</span>Add lease</button>`;
+  b+=`<button class="btn danger" data-delprop>Delete this property</button>`;
+  document.getElementById('drawerBody').innerHTML=b;
+  wireDrawer(p);
+}
+function wireDrawer(p){
+  const numF=['value','loan','payment','taxes'];
+  document.querySelectorAll('#drawerBody [data-f]').forEach(el=>{
+    const ev=el.tagName==='SELECT'?'change':'input';
+    el.addEventListener(ev,e=>{
+      const f=e.target.dataset.f;
+      p[f]=numF.includes(f)?(parseFloat(e.target.value)||0):e.target.value;
+      recomputeAll();renderDrawerHeader(p);
+    });
+  });
+  document.querySelectorAll('#drawerBody [data-li]').forEach(el=>el.addEventListener('input',e=>{
+    const i=+e.target.dataset.li,f=e.target.dataset.lf;
+    p.leases[i][f]= f==='rent'?(parseFloat(e.target.value)||0):e.target.value;
+    recomputeAll();renderDrawerHeader(p);
+    if(f==='end'){const row=el.closest('.lease-edit');const exp=el.value&&new Date(el.value)<TODAY;if(row)row.classList.toggle('exp',!!exp);}
+  }));
+  const al=document.querySelector('#drawerBody [data-addlease]');
+  if(al)al.addEventListener('click',()=>{p.leases.push({u:'Unit',begin:'',end:'',rent:0});recomputeAll();renderDrawerBody(p);renderDrawerHeader(p);});
+  document.querySelectorAll('#drawerBody [data-dellease]').forEach(btn=>btn.addEventListener('click',e=>{p.leases.splice(+e.currentTarget.dataset.dellease,1);recomputeAll();renderDrawerBody(p);renderDrawerHeader(p);}));
+  document.querySelectorAll('#drawerBody [data-mtm]').forEach(cb=>cb.addEventListener('change',e=>{p.leases[+e.target.dataset.mtm].mtm=e.target.checked;recomputeAll();renderDrawerBody(p);renderDrawerHeader(p);}));
+  let armed=false,timer=null;
+  const dp=document.querySelector('#drawerBody [data-delprop]');
+  if(dp)dp.addEventListener('click',e=>{
+    if(!armed){armed=true;e.currentTarget.textContent='Tap again to confirm delete';clearTimeout(timer);timer=setTimeout(()=>{armed=false;const btn=document.querySelector('#drawerBody [data-delprop]');if(btn)btn.textContent='Delete this property';},2600);return;}
+    state.properties=state.properties.filter(x=>x.id!==p.id);save();closeDrawer();recomputeAll();toast('Property deleted');
+  });
+}
+function openDrawer(id){
+  const p=state.properties.find(x=>x.id===id); if(!p)return; openId=id;
+  renderDrawerHeader(p);renderDrawerBody(p);
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function addProperty(){
+  const id='p'+Date.now();
+  state.properties.push({id,addr:'',owner:'',purchased:'',kind:'investment',use:'Commercial',value:0,loan:0,payment:0,taxes:0,lender:'',leases:[]});
+  save();recomputeAll();openDrawer(id);
+}
+function closeDrawer(){document.getElementById('scrim').classList.remove('show');document.getElementById('drawer').classList.remove('show');openId=null;}
+
+/* ================= ACCOUNTS ================= */
+const KINDS=[['checking','Checking'],['savings','Savings'],['money','Money Market'],['cd','CD'],['investment','Investment'],['loan','Loan'],['credit','Credit Line']];
+const kindLabel=k=>(KINDS.find(x=>x[0]===k)||[,'Account'])[1];
+const isDebt=k=>k==='loan'||k==='credit';
+const fmtUpd=s=>s?new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+function renderAccounts(){
+  const ac=state.accounts||[],t=accountTotals();
+  document.getElementById('acctStats').innerHTML=`
+    <div class="stat"><div class="lab">Total Deposits</div><div class="val">${fmt(t.persDep+t.bizDep)}</div><div class="meta">${ac.filter(a=>!isDebt(a.kind)&&a.kind!=='investment').length} bank accounts</div></div>
+    <div class="stat"><div class="lab">Investments</div><div class="val">${fmt(t.invest)}</div><div class="meta">${ac.filter(a=>a.kind==='investment').length} accounts · rolls into Long-Term</div></div>
+    <div class="stat"><div class="lab">Business Cash</div><div class="val">${fmt(t.bizDep)}</div><div class="meta">rolls into Business Accounts</div></div>
+    <div class="stat"><div class="lab">Loans &amp; Credit</div><div class="val">${fmt(t.loans+t.credit)}</div><div class="meta">${t.latest?'last updated '+fmtUpd(t.latest):'rolls into Liabilities'}</div></div>`;
+  const ents=[...new Set(ac.map(a=>a.entity||'Personal'))].sort((a,b)=>a==='Personal'?-1:b==='Personal'?1:a.localeCompare(b));
+  document.getElementById('acctGroups').innerHTML= ents.length? ents.map(en=>{
+    const list=ac.filter(a=>(a.entity||'Personal')===en);
+    const dep=list.filter(a=>!isDebt(a.kind)&&!a.excluded).reduce((s,a)=>s+(a.balance||0),0);
+    const debt=list.filter(a=>isDebt(a.kind)&&!a.excluded).reduce((s,a)=>s+(a.balance||0),0);
+    return `<div class="agroup"><div class="gh"><div class="gt">${esc(en)}</div><div class="gsum">${fmt(dep)} deposits${debt?' · '+fmt(debt)+' owed':''}</div></div><div class="accts">`+
+      list.map(a=>{const d=isDebt(a.kind);
+        const ldet=a.kind==='loan'&&(a.rate||a.payment)?`<div class="ldetail">${a.rate?a.rate+'%':''}${a.rate&&a.payment?' · ':''}${a.payment?fmt(a.payment)+'/mo':''}</div>`:'';
+        return `<div class="acct ${a.excluded?'exd':''}" data-acct="${a.id}"><div><div class="an">${esc(a.name)||'Unnamed'}</div><div class="ai"><span class="kch ${d?'lo':''}">${kindLabel(a.kind)}</span>${a.excluded?'<span class="kch ex">Excluded</span>':''}${esc(a.institution||'')}</div></div><div class="ab"><div class="bal ${d?'neg':''}">${d?'−':''}${fmt(a.balance||0)}</div>${ldet}<div class="upd">${a.updated?'Updated '+fmtUpd(a.updated):''}</div></div></div>`;
+      }).join('')+`</div></div>`;
+  }).join('') : `<div class="card"><div class="empty"><b>No accounts yet</b>Add one manually or update from screenshots.</div></div>`;
+  document.querySelectorAll('[data-acct]').forEach(el=>el.addEventListener('click',()=>openAcctDrawer(el.dataset.acct)));
+}
+function renderAcctHeader(a){
+  document.getElementById('dAddr').textContent=a.name||'New account';
+  document.getElementById('dMeta').textContent=`${kindLabel(a.kind)} · ${a.entity||'Personal'}${a.institution?' · '+a.institution:''}`;
+  document.getElementById('dStat').innerHTML=`<div>Balance<b>${fmt(a.balance||0)}</b></div><div>Rolls into<b style="font-size:12px">${a.excluded?'Excluded (wash)':(isDebt(a.kind)?'Liabilities':(a.kind==='investment'?'Long-Term':((a.entity||'Personal')==='Personal'?'Cash & Equiv.':'Business Accts')))}</b></div><div>Updated<b style="font-size:12px">${a.updated?fmtUpd(a.updated):'—'}</b></div>`;
+}
+function renderAcctBody(a){
+  let b=`<div class="dsection">Account details</div>
+    <div class="field"><label>Account name</label><input type="text" data-af="name" value="${esc(a.name)}" placeholder="e.g. Operating Checking"></div>
+    <div class="field"><label>Institution</label><input type="text" data-af="institution" value="${esc(a.institution||'')}" placeholder="e.g. B1 Bank"></div>
+    <div class="field"><label>Type</label><select data-af="kind">${KINDS.map(k=>`<option value="${k[0]}"${a.kind===k[0]?' selected':''}>${k[1]}</option>`).join('')}</select></div>
+    <div class="field"><label>Entity / owner</label><input type="text" data-af="entity" value="${esc(a.entity||'Personal')}" list="entityList"></div>
+    <div class="field"><label>Balance</label><input type="number" data-af="balance" value="${a.balance||0}"></div>`;
+  if(isDebt(a.kind)){
+    b+=`<div class="dsection">Loan terms</div>
+    <div class="field"><label>Interest rate %</label><input type="number" step="0.01" data-af="rate" value="${a.rate||''}"></div>
+    <div class="field"><label>Monthly payment</label><input type="number" data-af="payment" value="${a.payment||''}"></div>
+    <div class="field"><label>Maturity date</label><input type="date" data-af="maturity" value="${a.maturity||''}"></div>
+    <div class="field"><label>Original amount</label><input type="number" data-af="orig" value="${a.orig||''}"></div>`;
+  }
+  b+=`<div class="dsection">Notes</div>
+    <div class="field"><label>Notes</label><input type="text" data-af="notes" value="${esc(a.notes||'')}" placeholder="optional"></div>
+    <label class="le-mtm" style="margin-top:14px"><input type="checkbox" data-excl ${a.excluded?'checked':''}> Exclude from totals — wash or pass-through (e.g. owner-financed where payments offset exactly)</label>
+    <button class="btn danger" data-delacct>Delete this account</button>`;
+  document.getElementById('drawerBody').innerHTML=b;
+  const numA=['balance','rate','payment','orig'];
+  document.querySelectorAll('#drawerBody [data-af]').forEach(el=>{
+    const ev=el.tagName==='SELECT'?'change':'input';
+    el.addEventListener(ev,e=>{const f=e.target.dataset.af;
+      a[f]=numA.includes(f)?(parseFloat(e.target.value)||0):e.target.value;
+      if(f==='balance')a.updated=new Date().toISOString().slice(0,10);
+      recomputeAll();renderAcctHeader(a);
+      if(f==='kind')renderAcctBody(a);
+    });
+  });
+  const ex=document.querySelector('#drawerBody [data-excl]');
+  if(ex)ex.addEventListener('change',e=>{a.excluded=e.target.checked;recomputeAll();renderAcctHeader(a);});
+  let armed=false,timer=null;
+  document.querySelector('#drawerBody [data-delacct]').addEventListener('click',e=>{
+    if(!armed){armed=true;e.currentTarget.textContent='Tap again to confirm delete';clearTimeout(timer);timer=setTimeout(()=>{armed=false;const btn=document.querySelector('#drawerBody [data-delacct]');if(btn)btn.textContent='Delete this account';},2600);return;}
+    state.accounts=state.accounts.filter(x=>x.id!==a.id);save();closeDrawer();recomputeAll();toast('Account deleted');
+  });
+}
+function openAcctDrawer(id){const a=state.accounts.find(x=>x.id===id);if(!a)return;renderAcctHeader(a);renderAcctBody(a);document.getElementById('scrim').classList.add('show');document.getElementById('drawer').classList.add('show');}
+function addAccount(){const id='a'+Date.now();state.accounts.push({id,name:'',institution:'',kind:'checking',entity:'Personal',balance:0,updated:new Date().toISOString().slice(0,10)});save();recomputeAll();openAcctDrawer(id);}
+
+/* ---------- screenshot import ---------- */
+let impParsed=[];
+function impStatus(msg,spin){const el=document.getElementById('impStatus');el.style.display='flex';el.innerHTML=(spin?'<span class="spin"></span>':'')+msg;}
+function normalizeKind(t){t=(t||'').toLowerCase();if(t.includes('sav'))return'savings';if(t.includes('money'))return'money';if(t.includes('cd')||t.includes('certif'))return'cd';if(t.includes('mortgage')||t.includes('loan'))return'loan';if(t.includes('credit')||t.includes('card')||t.includes('line'))return'credit';return'checking';}
+function fileToB64(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('read failed'));r.readAsDataURL(f);});}
+function shrinkImage(dataUrl,maxDim=1400,quality=0.82){return new Promise((res,rej)=>{
+  const img=new Image();
+  img.onload=()=>{try{
+    let w=img.width,h=img.height;
+    const scale=Math.min(1,maxDim/Math.max(w,h));
+    w=Math.round(w*scale);h=Math.round(h*scale);
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    res(c.toDataURL('image/jpeg',quality).split(',')[1]);
+  }catch(e){rej(e);}};
+  img.onerror=()=>rej(new Error('image decode failed'));
+  img.src=dataUrl;
+});}
+async function readOneScreenshot(b64){
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Extract every bank account visible in this screenshot. Respond with ONLY a JSON array and nothing else — no markdown, no backticks, no commentary: [{"name":"account name as shown","institution":"bank name if visible else empty string","type":"one of: checking, savings, money market, cd, loan, credit","balance":1234.56}] Use the current/available balance shown. For loans use the outstanding balance owed as a positive number. If no accounts are visible, respond with []'}]}]})});
+  let data=null; try{data=await resp.json();}catch(e){throw new Error('reader returned a non-JSON response (status '+resp.status+')');}
+  if(data&&data.error)throw new Error(data.error.message||('reader error, status '+resp.status));
+  if(!resp.ok)throw new Error('reader request failed (status '+resp.status+')');
+  const text=((data&&data.content)||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
+  if(!text.trim())throw new Error('reader returned an empty response');
+  const m=text.match(/\[[\s\S]*\]/);
+  if(!m)throw new Error('couldn\u2019t find account data in the reader\u2019s response');
+  return JSON.parse(m[0]);
+}
+async function readScreenshots(files){
+  impParsed=[];document.getElementById('impReview').innerHTML='';document.getElementById('impApply').style.display='none';
+  const errs=[];
+  for(let i=0;i<files.length;i++){
+    try{
+      impStatus(`Preparing screenshot ${i+1} of ${files.length}…`,true);
+      const dataUrl=await fileToB64(files[i]);
+      const b64=await shrinkImage(dataUrl);
+      impStatus(`Reading screenshot ${i+1} of ${files.length}…`,true);
+      const arr=await readOneScreenshot(b64);
+      arr.forEach(x=>impParsed.push({name:String(x.name||'Account'),institution:String(x.institution||''),kind:normalizeKind(x.type),balance:parseFloat(x.balance)||0}));
+    }catch(err){console.error('screenshot '+(i+1)+':',err);errs.push('Screenshot '+(i+1)+': '+err.message);}
+  }
+  if(!impParsed.length){
+    impStatus(errs.length?('Couldn\u2019t read: '+errs.join(' · ')+'. You can also paste the screenshot to Claude in chat, or enter balances manually.'):'No accounts found in those screenshots — try a clearer capture.',false);
+    return;
+  }
+  impStatus(`Found ${impParsed.length} account${impParsed.length>1?'s':''}${errs.length?' ('+errs.length+' screenshot'+(errs.length>1?'s':'')+' failed)':''}. Match each to an existing account, or create new:`,false);
+  renderImpReview();
+}
+function renderImpReview(){
+  document.getElementById('impReview').innerHTML=impParsed.map((x,i)=>{
+    const guess=state.accounts.find(a=>a.name&&(a.name.toLowerCase().includes(x.name.toLowerCase())||x.name.toLowerCase().includes(a.name.toLowerCase())));
+    const opts=`<option value="new">＋ Create new account</option>`+state.accounts.map(a=>`<option value="${a.id}"${guess&&guess.id===a.id?' selected':''}>${esc(a.name)} (${kindLabel(a.kind)} · ${esc(a.entity||'Personal')})</option>`).join('');
+    return `<div class="improw"><div><div class="in">${esc(x.name)}</div><div class="ii">${esc(x.institution)||kindLabel(x.kind)}</div></div><div class="iv">${fmt(x.balance)}</div><select data-imp="${i}">${opts}</select></div>`;
+  }).join('');
+  document.getElementById('impApply').style.display='inline-block';
+}
+function applyImport(){
+  const today=new Date().toISOString().slice(0,10);let upd=0,created=0;
+  impParsed.forEach((x,i)=>{
+    const sel=document.querySelector(`select[data-imp="${i}"]`);const v=sel?sel.value:'new';
+    if(v==='new'){state.accounts.push({id:'a'+Date.now()+i,name:x.name,institution:x.institution,kind:x.kind,entity:'Personal',balance:x.balance,updated:today});created++;}
+    else{const a=state.accounts.find(z=>z.id===v);if(a){a.balance=x.balance;a.updated=today;if(!a.institution&&x.institution)a.institution=x.institution;upd++;}}
+  });
+  save();recomputeAll();closeImport();
+  toast(`${upd} balance${upd!==1?'s':''} updated${created?' · '+created+' account'+(created>1?'s':'')+' created':''}`);
+}
+function openImport(){impParsed=[];document.getElementById('impReview').innerHTML='';document.getElementById('impStatus').style.display='none';document.getElementById('impApply').style.display='none';document.getElementById('impFiles').value='';document.getElementById('impScrim').classList.add('show');document.getElementById('impModal').classList.add('show');}
+function closeImport(){document.getElementById('impScrim').classList.remove('show');document.getElementById('impModal').classList.remove('show');}
+
+function renderSnapshots(){
+  const s=state.snapshots, trend=document.getElementById('snapTrend'), list=document.getElementById('snapList');
+  if(!s.length){trend.innerHTML=`<div class="empty"><b>No snapshots yet</b>Save your first snapshot to begin charting net worth over time.</div>`;list.innerHTML='';return;}
+  const max=Math.max(...s.map(x=>x.nw)), min=Math.min(...s.map(x=>x.nw))*0.96;
+  trend.innerHTML=s.map(x=>{const h=max===min?70:30+(x.nw-min)/(max-min)*70;return `<div class="bar"><div class="col" style="height:${h}%"></div><div class="dt">${new Date(x.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div></div>`;}).join('');
+  list.innerHTML=s.slice().reverse().map((x,i,arr)=>{const prev=arr[i+1];const d=prev?x.nw-prev.nw:0;const ds=prev?` <span style="color:${d>=0?'var(--green)':'var(--brick)'};font-size:12px">${d>=0?'+':'−'}${fmt(Math.abs(d))}</span>`:'';return `<div class="row"><span class="k">${fmtDate(x.date)}</span><span class="v">${fmt(x.nw)}${ds}</span></div>`;}).join('');
+}
+function saveSnapshot(){const nw=totals().nw;const today=new Date().toISOString().slice(0,10);state.snapshots=state.snapshots.filter(s=>s.date!==today);state.snapshots.push({date:today,nw});state.snapshots.sort((a,b)=>new Date(a.date)-new Date(b.date));save();renderHero();renderSnapshots();toast('Snapshot saved · '+fmt(nw));}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+const fmtDateShort=s=> s? new Date(s).toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
+function rblock(title,items){const rows=items.filter(x=>x.v>0);if(!rows.length)return '';return `<div class="rsub">${title}</div>`+rows.map(x=>`<div class="rline"><span>${esc(x.k)}</span><span class="v">${fmt(x.v)}</span></div>`).join('');}
+function buildReport(o){
+  const t=totals(),re=reTotals();
+  const gen=new Date().toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  let html=`<div class="rpt"><div class="rhead"><div><div class="rmark">Chance Wealth</div><div class="rtitle">Personal Financial Statement</div></div><div class="rmeta"><b>${esc(o.name)}</b><br>As of ${fmtDate(o.date)}${o.preparedFor?'<br>Prepared for '+esc(o.preparedFor):''}</div></div>`;
+  if(o.nw){
+    html+=`<div class="rnw"><div><div class="l">Net Worth</div><div class="n big">${fmt(t.nw)}</div></div><div style="text-align:right"><div class="l">Total Assets</div><div class="n">${fmt(t.assets)}</div></div><div style="text-align:right"><div class="l">Total Liabilities</div><div class="n">${fmt(t.liab)}</div></div></div>
+      <div class="rcols"><div class="rcol"><h4>Assets</h4>
+        ${rblock('Cash &amp; Equivalents',state.cash)}
+        <div class="rsub">Real Estate</div><div class="rline"><span>Real estate — see schedule</span><span class="v">${fmt(re.value)}</span></div>
+        ${rblock('Other Physical Assets',state.physical)}
+        ${rblock('Long-Term &amp; Retirement',state.longTerm)}
+        <div class="rtot assets"><span>Total Assets</span><span class="v">${fmt(t.assets)}</span></div></div>
+      <div class="rcol"><h4>Liabilities</h4>
+        <div class="rsub">Mortgages</div><div class="rline"><span>Property loans — see schedule</span><span class="v">${fmt(re.loan)}</span></div>
+        ${state.installment.some(x=>x.v>0)?rblock('Installment Debt',state.installment):''}
+        ${state.revolving.some(x=>x.v>0)?rblock('Revolving Debt',state.revolving):'<div class="rsub">Revolving Debt</div><div class="rline"><span>None reported</span><span class="v">$0</span></div>'}
+        <div class="rtot liab"><span>Total Liabilities</span><span class="v">${fmt(t.liab)}</span></div>
+        <div class="rtot"><span>Net Worth</span><span class="v">${fmt(t.nw)}</span></div></div></div>`;
+  }
+  if(o.re){
+    html+=`<section class="${o.nw?'page-break':''}"><h4>Real Estate Owned</h4><table><thead><tr><th>Property</th><th>Entity</th><th>Type</th><th>Value</th><th>Loan</th><th>Equity</th><th>Rent/mo</th><th>Pmt/mo</th><th>Taxes/yr</th></tr></thead><tbody>`;
+    let sv=0,sl=0,se=0,sr=0,sp=0,sx=0;
+    state.properties.forEach(p=>{const eq=p.value-p.loan,r=activeRent(p);sv+=p.value;sl+=p.loan;se+=eq;sr+=r;sp+=p.payment;sx+=p.taxes;
+      html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(p.owner)}</td><td class="txt">${p.kind==='residential'?'Residential':'Investment'}</td><td>${fmt(p.value)}</td><td>${fmt(p.loan)}</td><td>${fmt(eq)}</td><td>${fmt(r)}</td><td>${fmt(p.payment)}</td><td>${fmt(p.taxes)}</td></tr>`;});
+    html+=`<tr class="totrow"><td class="txt">Totals · ${state.properties.length} properties</td><td></td><td></td><td>${fmt(sv)}</td><td>${fmt(sl)}</td><td>${fmt(se)}</td><td>${fmt(sr)}</td><td>${fmt(sp)}</td><td>${fmt(sx)}</td></tr></tbody></table></section>`;
+  }
+  if(o.roll){
+    html+=`<section style="margin-top:18px"><h4>Rent Roll</h4><table><thead><tr><th>Property</th><th>Unit</th><th>Term</th><th>Status</th><th>Rent/mo</th></tr></thead><tbody>`;
+    let active=0,any=false;
+    state.properties.forEach(p=>p.leases.forEach(l=>{any=true;const act=leaseActive(l);if(act)active+=l.rent;
+      const st=leaseStatus(l);
+      const term=l.begin?fmtDateShort(l.begin)+(l.end?' – '+fmtDateShort(l.end):' – m/m'):'Month-to-month';
+      html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(l.u)}</td><td class="txt">${term}</td><td class="txt">${st==='Expired'?'<span class="exp">Expired</span>':st}</td><td>${fmt(l.rent)}</td></tr>`;}));
+    if(!any)html+=`<tr><td class="txt" colspan="5">No leases on file.</td></tr>`;
+    html+=`<tr class="totrow"><td class="txt">Total active monthly rent</td><td></td><td></td><td></td><td>${fmt(active)}</td></tr></tbody></table></section>`;
+  }
+  if(o.acct&&(state.accounts||[]).length){
+    html+=`<section style="margin-top:18px"><h4>Bank Accounts &amp; Loans</h4><table><thead><tr><th>Account</th><th>Institution</th><th>Type</th><th>Entity</th><th>Rate</th><th>Pmt/mo</th><th>Balance</th></tr></thead><tbody>`;
+    let dep=0,owed=0;
+    const sorted=state.accounts.filter(a=>!a.excluded).sort((a,b)=>(isDebt(a.kind)?1:0)-(isDebt(b.kind)?1:0));
+    sorted.forEach(a=>{const d=isDebt(a.kind);if(d)owed+=a.balance||0;else dep+=a.balance||0;
+      html+=`<tr><td class="txt">${esc(a.name)}</td><td class="txt">${esc(a.institution||'—')}</td><td class="txt">${kindLabel(a.kind)}</td><td class="txt">${esc(a.entity||'Personal')}</td><td>${a.rate?a.rate+'%':'—'}</td><td>${a.payment?fmt(a.payment):'—'}</td><td>${d?'(':''}${fmt(a.balance||0)}${d?')':''}</td></tr>`;});
+    html+=`<tr class="totrow"><td class="txt">Totals — deposits ${fmt(dep)}${owed?' · owed '+fmt(owed):''}</td><td></td><td></td><td></td><td></td><td></td><td>${fmt(dep-owed)}</td></tr></tbody></table></section>`;
+  }
+  html+=`<div class="rfoot">Real-estate asset and mortgage balances are derived from the Real Estate Owned schedule and reconcile to it exactly. Property and personal-asset values are owner-reported estimates of fair value and do not constitute appraisals. Generated ${gen} via Chance Wealth.</div></div>`;
+  return html;
+}
+function openExportModal(){document.getElementById('expDate').value=new Date().toISOString().slice(0,10);document.getElementById('expScrim').classList.add('show');document.getElementById('expModal').classList.add('show');}
+function closeExport(){document.getElementById('expScrim').classList.remove('show');document.getElementById('expModal').classList.remove('show');}
+function doExport(){
+  const o={name:document.getElementById('expName').value||'Chance Family',date:document.getElementById('expDate').value||state.asOf,preparedFor:document.getElementById('expFor').value.trim(),nw:document.getElementById('optNW').checked,re:document.getElementById('optRE').checked,roll:document.getElementById('optRoll').checked,acct:document.getElementById('optAcct').checked};
+  document.getElementById('print-report').innerHTML=buildReport(o);
+  closeExport();
+  setTimeout(()=>window.print(),300);
+}
+
+function switchView(v){document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===v));document.querySelectorAll('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));}
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(b)switchView(b.dataset.view);});
+document.getElementById('gotoRE').addEventListener('click',()=>switchView('realestate'));
+document.getElementById('editToggle').addEventListener('click',e=>{editMode=!editMode;e.target.classList.toggle('on',editMode);e.target.textContent=editMode?'Done editing':'Edit values';renderLedgers();});
+document.getElementById('snapBtn').addEventListener('click',saveSnapshot);
+document.getElementById('snapBtn2').addEventListener('click',saveSnapshot);
+document.getElementById('drawerClose').addEventListener('click',closeDrawer);
+document.getElementById('scrim').addEventListener('click',closeDrawer);
+document.getElementById('reTools').addEventListener('click',e=>{const c=e.target.closest('.chip[data-filter]');if(!c)return;document.querySelectorAll('.chip[data-filter]').forEach(x=>x.classList.remove('on'));c.classList.add('on');propFilter=c.dataset.filter;renderRE();});
+document.getElementById('addProp').addEventListener('click',addProperty);
+document.getElementById('exportBtn').addEventListener('click',openExportModal);
+document.getElementById('expCancel').addEventListener('click',closeExport);
+document.getElementById('expScrim').addEventListener('click',closeExport);
+document.getElementById('expGo').addEventListener('click',doExport);
+document.getElementById('addAcct').addEventListener('click',addAccount);
+document.getElementById('impBtn').addEventListener('click',openImport);
+document.getElementById('impZone').addEventListener('click',()=>document.getElementById('impFiles').click());
+document.getElementById('impFiles').addEventListener('change',e=>{if(e.target.files.length)readScreenshots(e.target.files);});
+document.getElementById('impCancel').addEventListener('click',closeImport);
+document.getElementById('impScrim').addEventListener('click',closeImport);
+document.getElementById('impApply').addEventListener('click',applyImport);
+</script>
+</body>
+</html>
