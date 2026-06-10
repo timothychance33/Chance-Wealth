@@ -810,7 +810,7 @@
 <div class="modal wide" id="impModal">
   <div class="mh"><h3>Update balances from screenshots</h3><p>Claude reads your screenshots and proposes updates — nothing changes until you confirm.</p></div>
   <div class="mb">
-    <div class="dropzone" id="impZone"><b>Choose screenshot(s)</b><span>Works when the AI reader is connected · PNG or JPG</span></div>
+    <div class="dropzone" id="impZone"><b>Choose screenshot(s)</b><span>Bank app or website screenshots · PNG or JPG · several at once is fine</span></div>
     <input type="file" id="impFiles" accept="image/*" multiple style="display:none">
     <div class="imp-divider">or paste from Claude</div>
     <textarea class="paste-area" id="impPaste" placeholder='Paste the account data block Claude gives you in chat — looks like: [{"name":"Simply Checking","balance":8872.45,...}]'></textarea>
@@ -1543,15 +1543,12 @@ function shrinkImage(dataUrl,maxDim=1400,quality=0.82){return new Promise((res,r
   img.src=dataUrl;
 });}
 async function readOneScreenshot(b64){
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:'Extract every bank account visible in this screenshot. Respond with ONLY a JSON array and nothing else — no markdown, no backticks, no commentary: [{"name":"account name as shown","institution":"bank name if visible else empty string","type":"one of: checking, savings, money market, cd, loan, credit","balance":1234.56}] Use the current/available balance shown. For loans use the outstanding balance owed as a positive number. If no accounts are visible, respond with []'}]}]})});
+  const resp=await fetch('/api/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,media_type:'image/jpeg'})});
   let data=null; try{data=await resp.json();}catch(e){throw new Error('reader returned a non-JSON response (status '+resp.status+')');}
-  if(data&&data.error)throw new Error(data.error.message||('reader error, status '+resp.status));
+  if(data&&data.error)throw new Error(data.error);
   if(!resp.ok)throw new Error('reader request failed (status '+resp.status+')');
-  const text=((data&&data.content)||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n');
-  if(!text.trim())throw new Error('reader returned an empty response');
-  const m=text.match(/\[[\s\S]*\]/);
-  if(!m)throw new Error('couldn\u2019t find account data in the reader\u2019s response');
-  return JSON.parse(m[0]);
+  if(!Array.isArray(data.accounts))throw new Error('unexpected reader response');
+  return data.accounts;
 }
 async function readScreenshots(files){
   impParsed=[];document.getElementById('impReview').innerHTML='';document.getElementById('impApply').style.display='none';
