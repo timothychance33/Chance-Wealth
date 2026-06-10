@@ -297,6 +297,20 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* Quick update */
+  .q-row{display:grid;grid-template-columns:1fr 130px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .q-row .qn{font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .q-row .qe{font-size:11px;color:var(--ink-faint)}
+  .q-row input{font-family:"IBM Plex Mono",monospace;font-size:14px;text-align:right;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;outline:none;background:#fff;width:100%;box-sizing:border-box}
+  .q-row input:focus{border-color:var(--brass)}
+  .q-row input.changed{border-color:var(--green);background:rgba(46,122,98,.04)}
+  .q-sect{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:14px 0 4px}
+  .q-scroll{max-height:55vh;overflow-y:auto;margin:0 -4px;padding:0 4px}
+  .paste-area{width:100%;box-sizing:border-box;min-height:90px;border:1.5px dashed var(--line-strong);border-radius:11px;padding:12px;font-family:"IBM Plex Mono",monospace;font-size:12px;outline:none;background:var(--surface-2);resize:vertical;margin-top:12px}
+  .paste-area:focus{border-color:var(--brass);background:#fff}
+  .imp-divider{display:flex;align-items:center;gap:12px;margin:16px 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  .imp-divider::before,.imp-divider::after{content:'';flex:1;height:1px;background:var(--line)}
+
   /* More sheet (mobile) */
   .more-scrim{position:fixed;inset:0;background:rgba(17,48,42,.4);opacity:0;pointer-events:none;transition:.22s;z-index:38}
   .more-scrim.show{opacity:1;pointer-events:auto}
@@ -689,7 +703,8 @@
       <div><div class="eyebrow">Banking · Deposits &amp; Loans</div><h1>Accounts</h1></div>
       <div class="actions">
         <button class="btn ghost" id="addAcct">+ Add account</button>
-        <button class="btn primary" id="impBtn">Update from screenshots</button>
+        <button class="btn ghost" id="impBtn">Import</button>
+        <button class="btn primary" id="quickBtn">Quick update</button>
       </div>
     </div>
     <div class="stats stagger" id="acctStats"></div>
@@ -795,8 +810,11 @@
 <div class="modal wide" id="impModal">
   <div class="mh"><h3>Update balances from screenshots</h3><p>Claude reads your screenshots and proposes updates — nothing changes until you confirm.</p></div>
   <div class="mb">
-    <div class="dropzone" id="impZone"><b>Choose screenshot(s)</b><span>Bank app or website screenshots · PNG or JPG · several at once is fine</span></div>
+    <div class="dropzone" id="impZone"><b>Choose screenshot(s)</b><span>Works when the AI reader is connected · PNG or JPG</span></div>
     <input type="file" id="impFiles" accept="image/*" multiple style="display:none">
+    <div class="imp-divider">or paste from Claude</div>
+    <textarea class="paste-area" id="impPaste" placeholder='Paste the account data block Claude gives you in chat — looks like: [{"name":"Simply Checking","balance":8872.45,...}]'></textarea>
+    <button class="btn ghost" id="impParse" style="margin-top:8px">Read pasted data</button>
     <div class="impstatus" id="impStatus" style="display:none"></div>
     <div id="impReview"></div>
     <p class="privnote">Tip: only account names and balances are needed — feel free to crop out account numbers before uploading.</p>
@@ -806,6 +824,18 @@
     </div>
   </div>
 </div>
+<div class="mscrim" id="quickScrim"></div>
+<div class="modal wide" id="quickModal">
+  <div class="mh"><h3>Quick balance update</h3><p>Change any balance — untouched accounts stay as they are.</p></div>
+  <div class="mb">
+    <div class="q-scroll" id="quickList"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="quickCancel">Cancel</button>
+      <button class="btn primary" id="quickApply">Save changes</button>
+    </div>
+  </div>
+</div>
+
 <datalist id="entityList">
   <option value="Personal"></option>
   <option value="TLChance"></option>
@@ -1561,7 +1591,61 @@ function applyImport(){
   save();recomputeAll();closeImport();
   toast(`${upd} balance${upd!==1?'s':''} updated${created?' · '+created+' account'+(created>1?'s':'')+' created':''}`);
 }
-function openImport(){impParsed=[];document.getElementById('impReview').innerHTML='';document.getElementById('impStatus').style.display='none';document.getElementById('impApply').style.display='none';document.getElementById('impFiles').value='';document.getElementById('impScrim').classList.add('show');document.getElementById('impModal').classList.add('show');}
+/* ── Quick update ─────────────────────────────── */
+function openQuick(){
+  const groups={};
+  ;(state.accounts||[]).filter(a=>!a.excluded).forEach(a=>{
+    const e=normEnt(a.entity||'Personal');
+    if(!groups[e])groups[e]=[];
+    groups[e].push(a);
+  });
+  const order=Object.keys(groups).sort((a,b)=>a==='Personal'?-1:b==='Personal'?1:a.localeCompare(b));
+  document.getElementById('quickList').innerHTML=order.map(en=>
+    `<div class="q-sect">${esc(en)}</div>`+
+    groups[en].map(a=>`<div class="q-row">
+      <div><div class="qn">${esc(a.name)}</div><div class="qe">${kindLabel(a.kind)}${a.institution?' · '+esc(a.institution):''}</div></div>
+      <input type="number" step="0.01" inputmode="decimal" data-qid="${a.id}" data-orig="${a.balance||0}" value="${a.balance||0}">
+    </div>`).join('')
+  ).join('');
+  document.querySelectorAll('#quickList input').forEach(inp=>inp.addEventListener('input',e=>{
+    e.target.classList.toggle('changed',parseFloat(e.target.value)!==parseFloat(e.target.dataset.orig));
+  }));
+  document.getElementById('quickScrim').classList.add('show');
+  document.getElementById('quickModal').classList.add('show');
+}
+function closeQuick(){document.getElementById('quickScrim').classList.remove('show');document.getElementById('quickModal').classList.remove('show');}
+function applyQuick(){
+  const today=new Date().toISOString().slice(0,10);
+  let changed=0;
+  document.querySelectorAll('#quickList input').forEach(inp=>{
+    const nv=parseFloat(inp.value)||0;
+    const orig=parseFloat(inp.dataset.orig)||0;
+    if(nv!==orig){
+      const a=state.accounts.find(x=>x.id===inp.dataset.qid);
+      if(a){a.balance=nv;a.updated=today;changed++;}
+    }
+  });
+  save();recomputeAll();closeQuick();
+  toast(changed?changed+' balance'+(changed>1?'s':'')+' updated':'No changes made');
+}
+
+/* ── Paste-import from Claude chat ─────────────── */
+function parsePasted(){
+  const raw=document.getElementById('impPaste').value.trim();
+  if(!raw){impStatus('Paste the data block from Claude first.',false);return;}
+  try{
+    const m=raw.match(/\[[\s\S]*\]/);
+    if(!m)throw new Error('no JSON array found');
+    const arr=JSON.parse(m[0]);
+    impParsed=[];
+    arr.forEach(x=>impParsed.push({name:String(x.name||'Account'),institution:String(x.institution||''),kind:normalizeKind(x.type||x.kind),balance:parseFloat(x.balance)||0}));
+    if(!impParsed.length){impStatus('No accounts found in that paste.',false);return;}
+    impStatus(`Found ${impParsed.length} account${impParsed.length>1?'s':''}. Match each to an existing account, or create new:`,false);
+    renderImpReview();
+  }catch(e){impStatus('Couldn\u2019t read that paste — make sure you copied the whole block including the [ ] brackets.',false);}
+}
+
+function openImport(){impParsed=[];document.getElementById('impReview').innerHTML='';document.getElementById('impPaste').value='';document.getElementById('impStatus').style.display='none';document.getElementById('impApply').style.display='none';document.getElementById('impFiles').value='';document.getElementById('impScrim').classList.add('show');document.getElementById('impModal').classList.add('show');}
 function closeImport(){document.getElementById('impScrim').classList.remove('show');document.getElementById('impModal').classList.remove('show');}
 
 function renderSnapshots(){
@@ -1800,6 +1884,11 @@ document.getElementById('impFiles').addEventListener('change',e=>{if(e.target.fi
 document.getElementById('impCancel').addEventListener('click',closeImport);
 document.getElementById('impScrim').addEventListener('click',closeImport);
 document.getElementById('impApply').addEventListener('click',applyImport);
+document.getElementById('impParse').addEventListener('click',parsePasted);
+document.getElementById('quickBtn').addEventListener('click',openQuick);
+document.getElementById('quickCancel').addEventListener('click',closeQuick);
+document.getElementById('quickScrim').addEventListener('click',closeQuick);
+document.getElementById('quickApply').addEventListener('click',applyQuick);
 </script>
 </body>
 </html>
