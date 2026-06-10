@@ -274,6 +274,54 @@
   /* mobile bottom tab bar */
   .mob-tabs{display:none}
 
+  /* Vehicles view */
+  .veh-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .vtoolbar{display:flex;gap:7px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .vtoolbar .chip{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:6px 13px;border-radius:18px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+  .vtoolbar .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .vtoolbar .sep{flex:1}.vtoolbar .count{font-size:12px;color:var(--ink-faint)}
+  .veh-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .veh-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .14s,transform .14s,box-shadow .14s}
+  .veh-card:hover{border-color:var(--brass);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .veh-card .vn{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+  .veh-card .vn .vtag{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:1px 6px;border-radius:4px;font-weight:600}
+  .vtag.rental{color:var(--green);background:rgba(46,122,98,.1)}
+  .vtag.keeper{color:var(--brass-deep);background:rgba(168,126,51,.12)}
+  .vtag.sell{color:var(--brick);background:rgba(158,75,58,.1)}
+  .veh-card .vy{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .veh-card .vvals{display:flex;justify-content:space-between;margin-top:10px;gap:8px}
+  .veh-card .vv .vl{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+  .veh-card .vv .vn2{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+  .veh-card .vv .vn2.zero{color:var(--ink-faint)}
+  .veh-card .vv .vn2.income{color:var(--green)}
+  .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
+  @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
+
+  /* Entities view */
+  .ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+  .ent-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:border-color .14s,transform .14s,box-shadow .14s}
+  .ent-card:hover{border-color:var(--brass);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .ent-card .ec-head{padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+  .ent-card .ec-name{font-family:"Fraunces",serif;font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ent-card .ec-type{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+  .ent-card .ec-body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:7px}
+  .ent-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .ent-row .ek{font-size:12.5px;color:var(--ink-soft)}
+  .ent-row .ev{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+  .ent-row .ev.pos{color:var(--green)}.ent-row .ev.neg{color:var(--brick)}.ent-row .ev.dim{color:var(--ink-faint)}
+  .ent-divider{height:1px;background:var(--line);margin:4px 0}
+  .ent-card .ec-foot{padding:0 16px 13px;display:flex;justify-content:space-between;align-items:center}
+  .ent-card .ec-foot .hlabel{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+  .ent-card .ec-foot .hlabel.good{color:var(--green)}.ent-card .ec-foot .hlabel.watch{color:var(--brass-deep)}.ent-card .ec-foot .hlabel.risk{color:var(--brick)}
+  .ent-card .ec-foot .hbar{flex:1;height:5px;border-radius:3px;background:var(--line);margin:0 10px;overflow:hidden}
+  .ent-card .ec-foot .hfill{height:100%;border-radius:3px;transition:width .4s}
+  .ent-card .ec-foot .hfill.good{background:var(--green)}.ent-card .ec-foot .hfill.watch{background:var(--brass)}.ent-card .ec-foot .hfill.risk{background:var(--brick)}
+  .ent-total{background:linear-gradient(150deg,var(--ink),var(--ink-2));color:#EAF1EE;border-radius:14px;padding:20px 22px;box-shadow:var(--shadow-lg);margin-bottom:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .ent-total .et-item .el{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8FA59D}
+  .ent-total .et-item .en{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+  .ent-total .et-item .en.up{color:#8DD3BC}.ent-total .et-item .en.dn{color:#E5AD9F}
+  @media(max-width:560px){.ent-grid{grid-template-columns:1fr}.ent-total{grid-template-columns:1fr 1fr;gap:12px}}
+
   /* ---------- Accounts ---------- */
   .agroup{margin-bottom:20px}
   .agroup .gh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
@@ -460,7 +508,9 @@
     <div class="group-label">Holdings</div>
     <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
     <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
-    <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
+    <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
+    <button data-view="vehicles"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>Vehicles</button>
+        <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
   </nav>
   <div class="as-of">Reconciled as of<b id="asof">—</b></div>
   <div class="user-pill" id="userPill" style="display:none">
@@ -482,6 +532,14 @@
   <button data-view="realestate">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
     Real Estate
+  </button>
+  <button data-view="entities">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+    Entities
+  </button>
+  <button data-view="vehicles">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>
+    Vehicles
   </button>
   <button data-view="snapshots">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
@@ -581,6 +639,34 @@
     <p class="footnote">Each account rolls into the statement automatically by its type and entity: personal deposits into Cash &amp; Equivalents, business deposits into Business Accounts, loans and credit lines into Liabilities. Click any account to edit details or add loan terms.</p>
   </section>
 
+  <!-- ENTITIES -->
+  <section class="view" id="view-entities">
+    <div class="topbar">
+      <div><div class="eyebrow">By entity &amp; business</div><h1>Entities</h1></div>
+    </div>
+    <div class="ent-total stagger" id="entTotal"></div>
+    <div class="ent-grid stagger" id="entGrid"></div>
+    <p class="footnote">Each card rolls up all accounts and properties tagged to that entity. Cash flow = active monthly rent minus all debt service payments. Health score weighs cash-flow positivity, leverage ratio, and account balance.</p>
+  </section>
+
+  <!-- VEHICLES -->
+  <section class="view" id="view-vehicles">
+    <div class="topbar">
+      <div><div class="eyebrow">2nd Chance Motors · Chance Classics</div><h1>Vehicle Fleet</h1></div>
+      <div class="actions"><button class="btn primary" id="addVeh">+ Add vehicle</button></div>
+    </div>
+    <div class="veh-stats stagger" id="vehStats"></div>
+    <div class="vtoolbar" id="vehTools">
+      <button class="chip on" data-vfilter="all">All</button>
+      <button class="chip" data-vfilter="rental">Rental</button>
+      <button class="chip" data-vfilter="keeper">Keepers</button>
+      <button class="chip" data-vfilter="sell">Will Sell</button>
+      <span class="sep"></span><span class="count" id="vehCount"></span>
+    </div>
+    <div class="veh-grid" id="vehGrid"></div>
+    <p class="footnote">Vehicle values roll into the balance sheet as physical assets under the 2nd Chance entity. Rental income is tracked separately from property income. Click any vehicle to edit details.</p>
+  </section>
+
   <!-- SNAPSHOTS -->
   <section class="view" id="view-snapshots">
     <div class="topbar">
@@ -604,7 +690,7 @@
 </div>
 <div class="toast" id="toast"></div>
 <datalist id="ownerList">
-  <option value="Joint"></option><option value="JamFam"></option><option value="TLChance"></option><option value="2nd Chance"></option>
+  <option value="Joint"></option><option value="TLChance"></option><option value="2nd Chance"></option><option value="Chance Builders LLC"></option><option value="A Chance Realty"></option>
 </datalist>
 
 <div class="mscrim" id="expScrim"></div>
@@ -645,7 +731,12 @@
   </div>
 </div>
 <datalist id="entityList">
-  <option value="Personal"></option><option value="2nd Chance Speed Shop"></option><option value="2nd Chance Motors"></option><option value="Chance Builders LLC"></option><option value="Chance Classics"></option><option value="A Chance"></option><option value="A Chance Realty"></option><option value="TLChance"></option><option value="JamFam"></option>
+  <option value="Personal"></option>
+  <option value="TLChance"></option>
+  <option value="A Chance Realty"></option>
+  <option value="2nd Chance"></option>
+  <option value="Chance Builders LLC"></option>
+  <option value="Chance Classics"></option>
 </datalist>
 
 <div class="save-dot" id="saveDot"></div>
@@ -691,6 +782,7 @@ const SEED = {
   revolving: [],
   accounts: [],
   properties: [],
+  vehicles: [],
   snapshots: [],
 };
 
@@ -721,7 +813,7 @@ async function load(){
   return true;
 }
 function runMigrations(){
-  ['cash','physical','longTerm','installment','revolving','accounts','properties','snapshots'].forEach(k=>{
+  ['cash','physical','longTerm','installment','revolving','accounts','properties','vehicles','snapshots'].forEach(k=>{
     if(!Array.isArray(state[k]))state[k]=[];
   });
   if(!state.asOf)state.asOf=new Date().toISOString().slice(0,10);
@@ -777,9 +869,202 @@ const hasExpired=p=> p.leases.some(l=> l.rent>0 && l.end && !l.mtm && new Date(l
 
 function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEach(p=>{value+=p.value;loan+=p.loan;rent+=activeRent(p);ds+=p.payment;tax+=p.taxes;});return{value,loan,equity:value-loan,rent,debtSvc:ds,cashflow:rent-ds,tax};}
 function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
-function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const phys=state.physical.reduce((s,x)=>s+x.v,0);const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
+function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const vehVal=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);const phys=state.physical.reduce((s,x)=>s+x.v,0)+vehVal;const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
 
-function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+
+/* ═══════════════ VEHICLES ═══════════════════════════════════ */
+const PURPOSE_LABEL={'rental':'Rental','keeper':'Keeper','sell':'Will Sell'};
+let vehFilter='all';
+
+function vehTotals(){
+  const vv=state.vehicles||[];
+  return{
+    count:vv.length,
+    value:vv.reduce((s,v)=>s+(v.value||0),0),
+    cost:vv.reduce((s,v)=>s+(v.purchasePrice||0),0),
+    income:vv.reduce((s,v)=>s+(v.income12m||0),0),
+    rental:vv.filter(v=>v.purpose==='rental').length,
+  };
+}
+function renderVehicles(){
+  const vt=vehTotals();
+  document.getElementById('vehStats').innerHTML=`
+    <div class="stat"><div class="lab">Fleet Value</div><div class="val">${fmt(vt.value)}</div><div class="meta">${vt.count} vehicles</div></div>
+    <div class="stat"><div class="lab">Total Cost</div><div class="val">${fmt(vt.cost)}</div><div class="meta">purchase price basis</div></div>
+    <div class="stat"><div class="lab">Rental Cars</div><div class="val">${vt.rental}</div><div class="meta pos">${fmt(vt.income)} / yr income</div></div>
+    <div class="stat"><div class="lab">Unrealised Gain</div><div class="val">${fmt(vt.value-vt.cost)}</div><div class="meta pos">${vt.cost>0?((vt.value-vt.cost)/vt.cost*100).toFixed(0)+'% above cost':''}</div></div>`;
+  let vehs=(state.vehicles||[]).slice();
+  if(vehFilter!=='all')vehs=vehs.filter(v=>v.purpose===vehFilter);
+  document.getElementById('vehCount').textContent=`${vehs.length} of ${(state.vehicles||[]).length} shown`;
+  const flags={'veronica':'Value not set — update when appraised','rosie':'Current value not set — update when appraised'};
+  document.getElementById('vehGrid').innerHTML=vehs.map(v=>{
+    const flag=flags[v.id]||(v.id&&!v.value&&v.purpose==='rental'?'Value not set':'');
+    return`<div class="veh-card" data-veh="${v.id}">
+      <div class="vn">${esc(v.name||v.year+' '+v.make)}<span class="vtag ${v.purpose||'keeper'}">${PURPOSE_LABEL[v.purpose]||'Keeper'}</span></div>
+      <div class="vy">${v.year} ${esc(v.make)} ${esc(v.model)} · ${esc(v.color||'')}</div>
+      <div class="vvals">
+        <div class="vv"><div class="vl">Value</div><div class="vn2 ${!v.value?'zero':''}">${v.value?fmt(v.value):'—'}</div></div>
+        <div class="vv"><div class="vl">Cost</div><div class="vn2 ${!v.purchasePrice?'zero':''}">${v.purchasePrice?fmt(v.purchasePrice):'—'}</div></div>
+        <div class="vv"><div class="vl">Income / yr</div><div class="vn2 ${v.income12m?'income':'zero'}">${v.income12m?fmt(v.income12m):'—'}</div></div>
+      </div>
+      ${flag?`<div class="vflag">⚠ ${esc(flag)}</div>`:''}
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-veh]').forEach(el=>el.addEventListener('click',()=>openVehDrawer(el.dataset.veh)));
+}
+function openVehDrawer(id){
+  const v=(state.vehicles||[]).find(x=>x.id===id);if(!v)return;
+  document.getElementById('dAddr').textContent=(v.name||'Vehicle')+' — '+v.year+' '+v.make+' '+v.model;
+  document.getElementById('dMeta').textContent=(v.color||'')+' · VIN: '+(v.vin||'—')+' · '+v.entity;
+  document.getElementById('dStat').innerHTML=`<div>Value<b>${fmt(v.value||0)}</b></div><div>Cost<b>${fmt(v.purchasePrice||0)}</b></div><div>Income/yr<b>${fmt(v.income12m||0)}</b></div>`;
+  document.getElementById('drawerBody').innerHTML=`
+    <div class="dsection">Vehicle details</div>
+    <div class="field"><label>Name / nickname</label><input type="text" data-vf="name" value="${esc(v.name||'')}"></div>
+    <div class="field"><label>Year</label><input type="number" data-vf="year" value="${v.year||''}"></div>
+    <div class="field"><label>Make</label><input type="text" data-vf="make" value="${esc(v.make||'')}"></div>
+    <div class="field"><label>Model</label><input type="text" data-vf="model" value="${esc(v.model||'')}"></div>
+    <div class="field"><label>Color</label><input type="text" data-vf="color" value="${esc(v.color||'')}"></div>
+    <div class="field"><label>VIN</label><input type="text" data-vf="vin" value="${esc(v.vin||'')}"></div>
+    <div class="field"><label>Purpose</label><select data-vf="purpose"><option value="rental"${v.purpose==='rental'?' selected':''}>Rental</option><option value="keeper"${v.purpose==='keeper'?' selected':''}>Keeper</option><option value="sell"${v.purpose==='sell'?' selected':''}>Will Sell</option></select></div>
+    <div class="field"><label>Entity</label><input type="text" data-vf="entity" value="${esc(v.entity||'2nd Chance')}" list="entityList"></div>
+    <div class="dsection">Financials</div>
+    <div class="field"><label>Current value</label><input type="number" data-vf="value" value="${v.value||''}"></div>
+    <div class="field"><label>Purchase price</label><input type="number" data-vf="purchasePrice" value="${v.purchasePrice||''}"></div>
+    <div class="field"><label>Trailing 12m income</label><input type="number" data-vf="income12m" value="${v.income12m||''}"></div>
+    <div class="dsection">Notes</div>
+    <div class="field"><label>Notes</label><input type="text" data-vf="notes" value="${esc(v.notes||'')}"></div>
+    <button class="btn danger" data-delveh>Delete this vehicle</button>`;
+  const numF=['year','value','purchasePrice','income12m'];
+  document.querySelectorAll('#drawerBody [data-vf]').forEach(el=>{
+    const ev=el.tagName==='SELECT'?'change':'input';
+    el.addEventListener(ev,e=>{const f=e.target.dataset.vf;v[f]=numF.includes(f)?(parseFloat(e.target.value)||0):e.target.value;recomputeAll();document.getElementById('dStat').innerHTML=`<div>Value<b>${fmt(v.value||0)}</b></div><div>Cost<b>${fmt(v.purchasePrice||0)}</b></div><div>Income/yr<b>${fmt(v.income12m||0)}</b></div>`;});
+  });
+  let armed=false,timer=null;
+  document.querySelector('#drawerBody [data-delveh]').addEventListener('click',e=>{
+    if(!armed){armed=true;e.currentTarget.textContent='Tap again to confirm delete';clearTimeout(timer);timer=setTimeout(()=>{armed=false;const b=document.querySelector('#drawerBody [data-delveh]');if(b)b.textContent='Delete this vehicle';},2600);return;}
+    state.vehicles=state.vehicles.filter(x=>x.id!==v.id);save();closeDrawer();recomputeAll();toast('Vehicle deleted');
+  });
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function addVehicle(){
+  if(!state.vehicles)state.vehicles=[];
+  const id='v'+Date.now();
+  state.vehicles.push({id,name:'',year:new Date().getFullYear(),make:'',model:'',color:'',vin:'',purpose:'keeper',entity:'2nd Chance',value:0,purchasePrice:0,income12m:0,notes:''});
+  save();recomputeAll();openVehDrawer(id);
+}
+
+/* ═══════════════ ENTITIES ═══════════════════════════════════ */
+const ENTITY_ALIASES={
+  'A Chance':      'A Chance Realty',
+  'JamFam':        'Personal',
+  '2nd Chance':    '2nd Chance',
+  '2nd Chance Motors': '2nd Chance',
+};
+const normEnt=name=>ENTITY_ALIASES[name]||(name||'Personal');
+
+function entityRollup(){
+  const entities={};
+  const ensure=name=>{if(!entities[name])entities[name]={name,deposits:0,loans:0,credit:0,propValue:0,propLoan:0,propRent:0,propDebt:0,propTaxYr:0,accounts:[],properties:[]};return entities[name];};
+
+  // accounts
+  ;(state.accounts||[]).forEach(a=>{
+    if(a.excluded)return;
+    const e=ensure(normEnt(a.entity||'Personal'));
+    e.accounts.push(a);
+    const b=a.balance||0;
+    if(a.kind==='loan')e.loans+=b;
+    else if(a.kind==='credit')e.credit+=b;
+    else if(a.kind==='investment')e.deposits+=b;
+    else e.deposits+=b;
+  });
+
+  // manual cash/longTerm/physical/installment go to Personal
+  ;(state.cash||[]).forEach(x=>{if(x.v)ensure('Personal').deposits+=x.v;});
+  ;(state.physical||[]).forEach(x=>{if(x.v)ensure('Personal').deposits+=x.v;});
+  ;(state.longTerm||[]).forEach(x=>{if(x.v){const e=ensure(x.tag==='business'?'2nd Chance':'Personal');e.deposits+=x.v;}});
+  ;(state.installment||[]).forEach(x=>{if(x.v)ensure('Personal').loans+=x.v;});
+  ;(state.revolving||[]).forEach(x=>{if(x.v)ensure('Personal').credit+=x.v;});
+
+  // vehicles
+  ;(state.vehicles||[]).forEach(v=>{
+    const e=ensure(normEnt(v.entity||'2nd Chance'));
+    e.deposits+=(v.value||0);          // vehicles count as physical assets → deposits bucket for entity
+  });
+
+  // properties
+  ;(state.properties||[]).forEach(p=>{
+    const e=ensure(normEnt(p.owner||'Personal'));
+    e.properties.push(p);
+    e.propValue+=p.value||0;
+    e.propLoan+=p.loan||0;
+    e.propRent+=activeRent(p);
+    e.propDebt+=p.payment||0;
+    e.propTaxYr+=p.taxes||0;
+  });
+
+  // derived
+  Object.values(entities).forEach(e=>{
+    e.totalAssets=e.deposits+e.propValue;
+    e.totalDebt=e.loans+e.credit+e.propLoan;
+    e.equity=e.totalAssets-e.totalDebt;
+    e.cashflow=e.propRent-e.propDebt;
+    // health score 0-100
+    let score=50;
+    if(e.cashflow>0)score+=15;
+    else if(e.cashflow<0)score-=20;
+    if(e.totalAssets>0){const lvr=e.totalDebt/e.totalAssets;score+=lvr<0.3?15:lvr<0.5?5:lvr<0.7?-5:-20;}
+    if(e.deposits>0)score+=10;
+    e.health=Math.max(5,Math.min(100,score));
+    e.healthLabel=e.health>=70?'Good':e.health>=45?'Watch':'Risk';
+    e.healthClass=e.health>=70?'good':e.health>=45?'watch':'risk';
+  });
+
+  return Object.values(entities).sort((a,b)=>b.totalAssets-a.totalAssets);
+}
+
+function renderEntities(){
+  const ents=entityRollup();
+  if(!ents.length){
+    document.getElementById('entTotal').innerHTML='';
+    document.getElementById('entGrid').innerHTML='<div class="empty"><b>No entities yet</b>Add accounts and properties to see entity breakdowns.</div>';
+    return;
+  }
+
+  const totAssets=ents.reduce((s,e)=>s+e.totalAssets,0);
+  const totDebt=ents.reduce((s,e)=>s+e.totalDebt,0);
+  const totRent=ents.reduce((s,e)=>s+e.propRent,0);
+  const totCF=ents.reduce((s,e)=>s+e.cashflow,0);
+  document.getElementById('entTotal').innerHTML=`
+    <div class="et-item"><div class="el">Total Assets</div><div class="en up">${fmt(totAssets)}</div></div>
+    <div class="et-item"><div class="el">Total Debt</div><div class="en dn">${fmt(totDebt)}</div></div>
+    <div class="et-item"><div class="el">Rent / mo</div><div class="en">${fmt(totRent)}</div></div>
+    <div class="et-item"><div class="el">Net Cash Flow / mo</div><div class="en ${totCF>=0?'up':'dn'}">${totCF>=0?'+':''}${fmt(totCF)}</div></div>`;
+
+  document.getElementById('entGrid').innerHTML=ents.map(e=>`
+    <div class="ent-card">
+      <div class="ec-head">
+        <div class="ec-name">${esc(e.name)}</div>
+        <div class="ec-type">${e.properties.length} propert${e.properties.length===1?'y':'ies'} · ${e.accounts.length} account${e.accounts.length===1?'':'s'}</div>
+      </div>
+      <div class="ec-body">
+        <div class="ent-row"><span class="ek">Cash &amp; deposits</span><span class="ev ${e.deposits>0?'':'dim'}">${fmt(e.deposits)}</span></div>
+        <div class="ent-row"><span class="ek">Property value</span><span class="ev">${fmt(e.propValue)}</span></div>
+        <div class="ent-row"><span class="ek">Total debt</span><span class="ev ${e.totalDebt>0?'neg':'dim'}">${fmt(e.totalDebt)}</span></div>
+        <div class="ent-row"><span class="ek">Equity</span><span class="ev ${e.equity>=0?'pos':'neg'}">${fmt(e.equity)}</span></div>
+        <div class="ent-divider"></div>
+        <div class="ent-row"><span class="ek">Rent / mo</span><span class="ev">${fmt(e.propRent)}</span></div>
+        <div class="ent-row"><span class="ek">Debt service / mo</span><span class="ev ${e.propDebt>0?'neg':'dim'}">${fmt(e.propDebt)}</span></div>
+        <div class="ent-row"><span class="ek">Net cash flow / mo</span><span class="ev ${e.cashflow>=0?'pos':'neg'}">${e.cashflow>=0?'+':''}${fmt(e.cashflow)}</span></div>
+      </div>
+      <div class="ec-foot">
+        <span class="hlabel ${e.healthClass}">${e.healthLabel}</span>
+        <div class="hbar"><div class="hfill ${e.healthClass}" style="width:${e.health}%"></div></div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint)">${e.health}</span>
+      </div>
+    </div>`).join('');
+}
 
 function renderHero(){
   const t=totals();
@@ -1314,6 +1599,12 @@ document.getElementById('gotoRE').addEventListener('click',()=>switchView('reale
 document.getElementById('editToggle').addEventListener('click',e=>{editMode=!editMode;e.target.classList.toggle('on',editMode);e.target.textContent=editMode?'Done editing':'Edit values';renderLedgers();});
 document.getElementById('snapBtn').addEventListener('click',()=>saveSnapshot(false));
 document.getElementById('backupBtn').addEventListener('click',doBackup);
+document.getElementById('addVeh').addEventListener('click',addVehicle);
+document.getElementById('vehTools').addEventListener('click',e=>{
+  const c=e.target.closest('.chip[data-vfilter]');if(!c)return;
+  document.querySelectorAll('[data-vfilter]').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on');vehFilter=c.dataset.vfilter;renderVehicles();
+});
 document.getElementById('snapBtn2').addEventListener('click',()=>saveSnapshot(false));
 document.getElementById('drawerClose').addEventListener('click',closeDrawer);
 document.getElementById('scrim').addEventListener('click',closeDrawer);
