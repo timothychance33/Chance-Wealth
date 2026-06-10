@@ -297,6 +297,34 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* Cash flow view */
+  .cf-period{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+  .cf-period .chip{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:6px 14px;border-radius:18px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+  .cf-period .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .cf-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .cf-table{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .cf-table .ct-head{display:flex;justify-content:space-between;align-items:baseline;padding:15px 20px 4px}
+  .cf-table .ct-head h3{font-family:"Fraunces",serif;font-size:17px;font-weight:500}
+  .cf-table .ct-head .ct-total{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
+  .cf-table .ct-head .ct-total.in{color:var(--green)}.cf-table .ct-head .ct-total.out{color:var(--brick)}.cf-table .ct-head .ct-total.net{color:var(--ink)}
+  .cf-row{display:flex;justify-content:space-between;align-items:center;padding:8px 20px;border-top:1px solid var(--line);gap:14px}
+  .cf-row .ck{font-size:13.5px;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+  .cf-row .ck .ce{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);background:var(--surface-2);padding:1px 6px;border-radius:4px;font-weight:600}
+  .cf-row .cv{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:500;font-variant-numeric:tabular-nums}
+  .cf-row .cv.in{color:var(--green)}.cf-row .cv.out{color:var(--brick)}.cf-row .cv.zero{color:var(--ink-faint)}
+  .cf-net{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--surface-2);border-top:2px solid var(--line-strong)}
+  .cf-net .ck{font-size:14px;font-weight:700;color:var(--ink)}
+  .cf-net .cv{font-family:"IBM Plex Mono",monospace;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+  .cf-net .cv.pos{color:var(--green)}.cf-net .cv.neg{color:var(--brick)}
+  .cf-entity-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .cf-ent{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow)}
+  .cf-ent .cen{font-family:"Fraunces",serif;font-size:14px;font-weight:500;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cf-ent .cer{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line)}
+  .cf-ent .cer:last-child{border:none;font-weight:700;padding-top:6px}
+  .cf-ent .cer .cv{font-family:"IBM Plex Mono",monospace;font-size:13px;font-variant-numeric:tabular-nums}
+  .cf-ent .cer .cv.pos{color:var(--green)}.cf-ent .cer .cv.neg{color:var(--brick)}.cf-ent .cer .cv.dim{color:var(--ink-faint)}
+  @media(max-width:560px){.cf-summary{grid-template-columns:1fr 1fr}.cf-entity-grid{grid-template-columns:1fr}}
+
   /* Entities view */
   .ent-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
   .ent-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:border-color .14s,transform .14s,box-shadow .14s}
@@ -508,7 +536,8 @@
     <div class="group-label">Holdings</div>
     <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
     <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
-    <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
+    <button data-view="cashflow"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cash Flow</button>
+        <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
     <button data-view="vehicles"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>Vehicles</button>
         <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
   </nav>
@@ -532,6 +561,10 @@
   <button data-view="realestate">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
     Real Estate
+  </button>
+  <button data-view="cashflow">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    Cash Flow
   </button>
   <button data-view="entities">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
@@ -637,6 +670,24 @@
     <div class="stats stagger" id="acctStats"></div>
     <div id="acctGroups"></div>
     <p class="footnote">Each account rolls into the statement automatically by its type and entity: personal deposits into Cash &amp; Equivalents, business deposits into Business Accounts, loans and credit lines into Liabilities. Click any account to edit details or add loan terms.</p>
+  </section>
+
+  <!-- CASH FLOW -->
+  <section class="view" id="view-cashflow">
+    <div class="topbar">
+      <div><div class="eyebrow">Income &amp; Expenses</div><h1>Cash Flow</h1></div>
+    </div>
+    <div class="cf-period">
+      <button class="chip on" data-period="month">Monthly</button>
+      <button class="chip" data-period="year">Annual</button>
+    </div>
+    <div class="cf-summary stagger" id="cfSummary"></div>
+    <div class="cf-table" id="cfInflow"></div>
+    <div class="cf-table" id="cfOutflow"></div>
+    <div class="cf-table" id="cfNet"></div>
+    <div class="eyebrow" style="margin:20px 0 10px">By entity</div>
+    <div class="cf-entity-grid" id="cfEntGrid"></div>
+    <p class="footnote">Income uses active monthly rent and trailing-12m vehicle rental income (÷12). Debt service is your scheduled monthly payments. Property taxes are annual ÷12. All figures are based on current data — update account balances and lease terms to keep this accurate.</p>
   </section>
 
   <!-- ENTITIES -->
@@ -871,7 +922,7 @@ function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEac
 function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
 function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const vehVal=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);const phys=state.physical.reduce((s,x)=>s+x.v,0)+vehVal;const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
 
-function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
 
 /* ═══════════════ VEHICLES ═══════════════════════════════════ */
 const PURPOSE_LABEL={'rental':'Rental','keeper':'Keeper','sell':'Will Sell'};
@@ -953,6 +1004,90 @@ function addVehicle(){
   const id='v'+Date.now();
   state.vehicles.push({id,name:'',year:new Date().getFullYear(),make:'',model:'',color:'',vin:'',purpose:'keeper',entity:'2nd Chance',value:0,purchasePrice:0,income12m:0,notes:''});
   save();recomputeAll();openVehDrawer(id);
+}
+
+/* ═══════════════ CASH FLOW ══════════════════════════════════ */
+let cfPeriod='month';
+function cfMult(){return cfPeriod==='year'?12:1;}
+
+function buildCashFlow(){
+  const mult=cfMult();
+  const re=reTotals();
+  const vehIncome=(state.vehicles||[]).reduce((s,v)=>s+(v.income12m||0),0)/12*mult;
+  const propRent=re.rent*mult;
+  const debtSvc=re.debtSvc*mult;
+  const propTax=(re.tax/12)*mult;
+  const acctDebt=((state.accounts||[]).filter(a=>!a.excluded&&(a.kind==='loan'||a.kind==='credit')).reduce((s,a)=>s+(a.payment||0),0))*mult;
+
+  // inflow lines: rent per property (active) + vehicle rental income
+  const inflowLines=[];
+  ;(state.properties||[]).forEach(p=>{
+    const r=activeRent(p)*mult;
+    if(r>0)inflowLines.push({label:p.addr,entity:p.owner,amount:r});
+  });
+  if(vehIncome>0)inflowLines.push({label:'Vehicle rental fleet',entity:'2nd Chance',amount:vehIncome});
+
+  // outflow lines
+  const outflowLines=[];
+  ;(state.properties||[]).forEach(p=>{
+    if(p.payment>0)outflowLines.push({label:p.addr+' — mortgage',entity:p.owner,amount:p.payment*mult});
+  });
+  ;(state.properties||[]).forEach(p=>{
+    if(p.taxes>0)outflowLines.push({label:p.addr+' — taxes',entity:p.owner,amount:(p.taxes/12)*mult});
+  });
+  ;(state.accounts||[]).filter(a=>!a.excluded&&(a.kind==='loan'||a.kind==='credit')&&a.payment>0).forEach(a=>{
+    outflowLines.push({label:a.name,entity:a.entity||'Personal',amount:a.payment*mult});
+  });
+
+  const totalIn=inflowLines.reduce((s,l)=>s+l.amount,0);
+  const totalOut=outflowLines.reduce((s,l)=>s+l.amount,0);
+  const net=totalIn-totalOut;
+
+  return{inflowLines,outflowLines,totalIn,totalOut,net,propRent,vehIncome,debtSvc,propTax,acctDebt,mult};
+}
+
+function renderCashFlow(){
+  const d=buildCashFlow();
+  const mult=cfMult();
+  const lbl=cfPeriod==='year'?'/yr':'/mo';
+
+  // Summary strip
+  document.getElementById('cfSummary').innerHTML=`
+    <div class="stat"><div class="lab">Total Inflow${lbl}</div><div class="val" style="color:var(--green)">${fmt(d.totalIn)}</div><div class="meta pos">all income sources</div></div>
+    <div class="stat"><div class="lab">Total Outflow${lbl}</div><div class="val" style="color:var(--brick)">${fmt(d.totalOut)}</div><div class="meta">debt + taxes</div></div>
+    <div class="stat"><div class="lab">Net Cash Flow${lbl}</div><div class="val" style="color:${d.net>=0?'var(--green)':'var(--brick)'}">${d.net>=0?'+':''}${fmt(d.net)}</div><div class="meta ${d.net>=0?'pos':''}">bottom line</div></div>
+    <div class="stat"><div class="lab">Debt Coverage</div><div class="val">${d.totalOut>0?(d.totalIn/d.totalOut).toFixed(2)+'x':'—'}</div><div class="meta ${d.totalIn>=d.totalOut?'pos':''}">income ÷ outflow</div></div>`;
+
+  // Inflow table
+  document.getElementById('cfInflow').innerHTML=`
+    <div class="ct-head"><h3>Income</h3><span class="ct-total in">${fmt(d.totalIn)}${lbl}</span></div>
+    ${d.inflowLines.map(l=>`<div class="cf-row"><span class="ck">${esc(l.label)}<span class="ce">${esc(normEnt(l.entity||''))}</span></span><span class="cv in">${fmt(l.amount)}</span></div>`).join('')}
+    ${d.inflowLines.length===0?'<div class="cf-row"><span class="ck">No active income sources</span><span class="cv zero">$0</span></div>':''}`;
+
+  // Outflow table
+  document.getElementById('cfOutflow').innerHTML=`
+    <div class="ct-head"><h3>Expenses</h3><span class="ct-total out">${fmt(d.totalOut)}${lbl}</span></div>
+    ${d.outflowLines.map(l=>`<div class="cf-row"><span class="ck">${esc(l.label)}<span class="ce">${esc(normEnt(l.entity||''))}</span></span><span class="cv out">−${fmt(l.amount)}</span></div>`).join('')}
+    ${d.outflowLines.length===0?'<div class="cf-row"><span class="ck">No tracked expenses</span><span class="cv zero">$0</span></div>':''}`;
+
+  // Net row
+  document.getElementById('cfNet').innerHTML=`
+    <div class="cf-net"><span class="ck">Net Cash Flow</span><span class="cv ${d.net>=0?'pos':'neg'}">${d.net>=0?'+':''}${fmt(d.net)}${lbl}</span></div>`;
+
+  // Per-entity breakdown
+  const entMap={};
+  d.inflowLines.forEach(l=>{const e=normEnt(l.entity||'Personal');if(!entMap[e])entMap[e]={in:0,out:0};entMap[e].in+=l.amount;});
+  d.outflowLines.forEach(l=>{const e=normEnt(l.entity||'Personal');if(!entMap[e])entMap[e]={in:0,out:0};entMap[e].out+=l.amount;});
+  const ents=Object.entries(entMap).sort((a,b)=>(b[1].in-b[1].out)-(a[1].in-a[1].out));
+  document.getElementById('cfEntGrid').innerHTML=ents.map(([name,e])=>{
+    const net=e.in-e.out;
+    return`<div class="cf-ent">
+      <div class="cen">${esc(name)}</div>
+      <div class="cer"><span>Income</span><span class="cv ${e.in>0?'pos':'dim'}">${fmt(e.in)}</span></div>
+      <div class="cer"><span>Expenses</span><span class="cv ${e.out>0?'neg':'dim'}">−${fmt(e.out)}</span></div>
+      <div class="cer"><span>Net</span><span class="cv ${net>=0?'pos':'neg'}">${net>=0?'+':''}${fmt(net)}</span></div>
+    </div>`;
+  }).join('');
 }
 
 /* ═══════════════ ENTITIES ═══════════════════════════════════ */
@@ -1600,6 +1735,12 @@ document.getElementById('editToggle').addEventListener('click',e=>{editMode=!edi
 document.getElementById('snapBtn').addEventListener('click',()=>saveSnapshot(false));
 document.getElementById('backupBtn').addEventListener('click',doBackup);
 document.getElementById('addVeh').addEventListener('click',addVehicle);
+document.querySelectorAll('[data-period]').forEach(btn=>btn.addEventListener('click',e=>{
+  document.querySelectorAll('[data-period]').forEach(x=>x.classList.remove('on'));
+  e.target.classList.add('on');
+  cfPeriod=e.target.dataset.period;
+  renderCashFlow();
+}));
 document.getElementById('vehTools').addEventListener('click',e=>{
   const c=e.target.closest('.chip[data-vfilter]');if(!c)return;
   document.querySelectorAll('[data-vfilter]').forEach(x=>x.classList.remove('on'));
