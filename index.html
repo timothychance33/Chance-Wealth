@@ -297,6 +297,28 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* Insurance view */
+  .ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:20px}
+  .ins-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:15px 17px;box-shadow:var(--shadow);cursor:pointer;transition:border-color .14s,transform .14s}
+  .ins-card:hover{border-color:var(--brass);transform:translateY(-2px)}
+  .ins-card.expiring{border-color:var(--brass)}
+  .ins-card.expired{border-color:var(--brick)}
+  .ins-card .in-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px}
+  .ins-card .in-name{font-weight:700;font-size:14px;flex:1}
+  .ins-card .in-badge{font-size:10px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
+  .in-badge.active{background:rgba(46,122,98,.1);color:var(--green)}
+  .in-badge.expiring{background:rgba(168,126,51,.12);color:var(--brass-deep)}
+  .in-badge.expired{background:rgba(158,75,58,.1);color:var(--brick)}
+  .in-badge.no-date{background:var(--surface-2);color:var(--ink-faint)}
+  .ins-card .in-carrier{font-size:11.5px;color:var(--ink-faint);margin-bottom:10px}
+  .ins-card .in-rows{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+  .ins-card .in-rows div{display:flex;justify-content:space-between;gap:8px}
+  .ins-card .in-rows .v{font-family:"IBM Plex Mono",monospace;font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+  .ins-uncover{background:rgba(158,75,58,.04);border:1px solid var(--brick-soft);border-radius:11px;padding:12px 15px;margin-bottom:14px}
+  .ins-uncover b{display:block;font-size:13px;color:var(--brick);margin-bottom:6px}
+  .ins-uncover ul{margin:0;padding:0 0 0 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+  @media(max-width:560px){.ins-grid{grid-template-columns:1fr}}
+
   /* Loans view */
   .ln-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
   .ln-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:15px 17px;box-shadow:var(--shadow)}
@@ -611,13 +633,18 @@
     <div class="group-label">Holdings</div>
     <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
     <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
+    <button data-view="insurance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Insurance</span>
+    </button>
     <button data-view="loans">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V8l4-4h10l4 4v13M3 21h18M12 11v6M9 14h6"/></svg>
       <span>Loans</span>
     </button>
     <button data-view="portfolio"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>Portfolio</button>
     <button data-view="cashflow"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cash Flow</button>
-        <button data-view="loans"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V8l4-4h10l4 4v13M3 21h18M12 11v6M9 14h6"/></svg>Loans</button>
+        <button data-view="insurance"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Insurance</button>
+    <button data-view="loans"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V8l4-4h10l4 4v13M3 21h18M12 11v6M9 14h6"/></svg>Loans</button>
     <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
     <button data-view="vehicles"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>Vehicles</button>
         <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
@@ -800,6 +827,18 @@
     <div class="ent-total stagger" id="entTotal"></div>
     <div class="ent-grid stagger" id="entGrid"></div>
     <p class="footnote">Each card rolls up all accounts and properties tagged to that entity. Cash flow = active monthly rent minus all debt service payments. Health score weighs cash-flow positivity, leverage ratio, and account balance.</p>
+  </section>
+
+  <!-- INSURANCE -->
+  <section class="view" id="view-insurance">
+    <div class="topbar">
+      <div><div class="eyebrow">Policies &amp; coverage</div><h1>Insurance</h1></div>
+      <div class="actions"><button class="btn primary" id="addIns">+ Add policy</button></div>
+    </div>
+    <div class="stats stagger" id="insStats"></div>
+    <div id="insUncover"></div>
+    <div class="ins-grid" id="insGrid"></div>
+    <p class="footnote">Each policy can cover one or more properties or vehicles. The coverage gap panel flags any asset not matched to an active policy by name or address. Policies expiring within 90 days show in amber; expired policies show in red.</p>
   </section>
 
   <!-- LOANS -->
@@ -1012,6 +1051,7 @@ function runMigrations(){
   });
   if(!state.asOf)state.asOf=new Date().toISOString().slice(0,10);
   if(!state.dataVersion)state.dataVersion=8;
+  if(!Array.isArray(state.insurance))state.insurance=[];
 }
 
 /* ── Auth ────────────────────────────────────────────────── */
@@ -1066,7 +1106,142 @@ function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEac
 function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
 function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const vehVal=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);const phys=state.physical.reduce((s,x)=>s+x.v,0)+vehVal;const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
 
-function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderPortfolio();renderLoans();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderPortfolio();renderLoans();renderInsurance();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+
+/* == INSURANCE == */
+const INS_KINDS={property:'Property',auto:'Auto',fleet:'Classic car / fleet',umbrella:'Umbrella',life:'Life',liability:'Liability',other:'Other'};
+
+function insStatus(pol){
+  if(!pol.renews)return'no-date';
+  const r=new Date(pol.renews),t=new Date();
+  const days=Math.ceil((r-t)/(864e5));
+  if(days<0)return'expired';
+  if(days<=90)return'expiring';
+  return'active';
+}
+function insDaysLabel(pol){
+  if(!pol.renews)return'No renewal date';
+  const r=new Date(pol.renews),t=new Date();
+  const days=Math.ceil((r-t)/(864e5));
+  if(days<0)return'Expired '+Math.abs(days)+' day'+(Math.abs(days)===1?'':'s')+' ago';
+  if(days===0)return'Expires today';
+  return'Renews in '+days+' day'+(days===1?'':'s')+' · '+fmtDate(pol.renews);
+}
+
+function renderInsurance(){
+  const pols=state.insurance||[];
+  const today=new Date();
+  const statsEl=document.getElementById('insStats');
+
+  if(!pols.length){
+    statsEl.innerHTML='<div class="empty"><b>No policies on file</b><br>Tap + Add policy to start tracking your coverage.</div>';
+    document.getElementById('insUncover').innerHTML='';
+    document.getElementById('insGrid').innerHTML='';
+    return;
+  }
+
+  const active=pols.filter(p=>insStatus(p)!=='expired');
+  const totalPremium=pols.reduce((s,p)=>s+(p.premium||0),0);
+  const expiring=pols.filter(p=>insStatus(p)==='expiring').length;
+  const expired=pols.filter(p=>insStatus(p)==='expired').length;
+  statsEl.innerHTML=`
+    <div class="stat"><div class="lab">Policies</div><div class="val">${pols.length}</div><div class="meta">${active.length} active</div></div>
+    <div class="stat"><div class="lab">Annual Premium</div><div class="val">${fmt(totalPremium)}</div><div class="meta">${fmt(totalPremium/12)}/mo</div></div>
+    <div class="stat"><div class="lab">Expiring Soon</div><div class="val" style="color:${expiring?'var(--brass-deep)':'var(--ink-soft)'}">${expiring}</div><div class="meta">within 90 days</div></div>
+    <div class="stat"><div class="lab">Expired</div><div class="val" style="color:${expired?'var(--brick)':'var(--ink-soft)'}">${expired}</div><div class="meta">need attention</div></div>`;
+
+  // coverage gap detection
+  const covered=new Set();
+  pols.filter(p=>insStatus(p)!=='expired').forEach(p=>{
+    (p.assets||[]).forEach(a=>covered.add(a.toLowerCase()));
+  });
+  const gaps=[];
+  ;(state.properties||[]).filter(p=>p.value>0).forEach(p=>{
+    const addr=p.addr.toLowerCase();
+    const hit=[...covered].some(c=>c.includes(addr.split(' ').slice(0,3).join(' '))||addr.includes(c.split(' ').slice(0,2).join(' ')));
+    if(!hit)gaps.push(p.addr+' ('+fmt(p.value)+')');
+  });
+  ;(state.vehicles||[]).filter(v=>v.purpose==='rental'&&v.value>0).forEach(v=>{
+    const vn=((v.year||'')+' '+(v.make||'')).toLowerCase();
+    const hit=[...covered].some(c=>c.includes(v.make?.toLowerCase()));
+    if(!hit)gaps.push((v.name||v.make)+' '+v.year+' ('+fmt(v.value||0)+')');
+  });
+  const uncoverEl=document.getElementById('insUncover');
+  uncoverEl.innerHTML=gaps.length?`<div class="ins-uncover"><b>⚠ Possible coverage gaps (${gaps.length})</b><ul>${gaps.map(g=>`<li>${esc(g)}</li>`).join('')}</ul><span style="font-size:11.5px;color:var(--ink-faint)">Gaps are flagged when no active policy lists this asset. Add the policy or link assets to resolve.</span></div>`:'';
+
+  // policy cards
+  document.getElementById('insGrid').innerHTML=pols.slice().sort((a,b)=>{
+    const order={expired:0,expiring:1,active:2,'no-date':3};
+    return order[insStatus(a)]-order[insStatus(b)];
+  }).map(p=>{
+    const st=insStatus(p);
+    const tl=fmt(p.coverage||0);
+    return`<div class="ins-card ${st==='expiring'?'expiring':st==='expired'?'expired':''}" data-ins="${p.id}">
+      <div class="in-head">
+        <div class="in-name">${esc(p.name)}</div>
+        <span class="in-badge ${st}">${st==='no-date'?'Active':st.charAt(0).toUpperCase()+st.slice(1)}</span>
+      </div>
+      <div class="in-carrier">${esc(INS_KINDS[p.kind]||'Policy')}${p.carrier?' · '+esc(p.carrier):''}${p.policyNum?' · #'+esc(p.policyNum):''}</div>
+      <div class="in-rows">
+        ${p.coverage?`<div><span>Coverage limit</span><span class="v">${fmt(p.coverage)}</span></div>`:''}
+        ${p.premium?`<div><span>Annual premium</span><span class="v">${fmt(p.premium)}</span></div>`:''}
+        ${p.deductible?`<div><span>Deductible</span><span class="v">${fmt(p.deductible)}</span></div>`:''}
+        <div><span>${insDaysLabel(p)}</span><span class="v"></span></div>
+        ${(p.assets||[]).length?`<div><span style="color:var(--ink-faint);font-size:11.5px">${(p.assets||[]).slice(0,2).map(esc).join(', ')}${(p.assets||[]).length>2?' +'+((p.assets||[]).length-2)+' more':''}</span></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-ins]').forEach(el=>el.addEventListener('click',()=>openInsDrawer(el.dataset.ins)));
+}
+
+function openInsDrawer(id){
+  const p=(state.insurance||[]).find(x=>x.id===id);if(!p)return;
+  document.getElementById('dAddr').textContent=p.name||'Policy';
+  document.getElementById('dMeta').textContent=(INS_KINDS[p.kind]||'Policy')+(p.carrier?' · '+p.carrier:'');
+  document.getElementById('dStat').innerHTML=`<div>Coverage<b>${fmt(p.coverage||0)}</b></div><div>Premium/yr<b>${fmt(p.premium||0)}</b></div><div>Deductible<b>${fmt(p.deductible||0)}</b></div>`;
+  document.getElementById('drawerBody').innerHTML=`
+    <div class="dsection">Policy details</div>
+    <div class="field"><label>Policy name</label><input type="text" data-if="name" value="${esc(p.name||'')}"></div>
+    <div class="field"><label>Type</label><select data-if="kind">${Object.entries(INS_KINDS).map(([k,v])=>`<option value="${k}"${p.kind===k?' selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="field"><label>Carrier / insurer</label><input type="text" data-if="carrier" value="${esc(p.carrier||'')}"></div>
+    <div class="field"><label>Policy number</label><input type="text" data-if="policyNum" value="${esc(p.policyNum||'')}"></div>
+    <div class="field"><label>Renewal date</label><input type="date" data-if="renews" value="${p.renews||''}"></div>
+    <div class="dsection">Coverage &amp; cost</div>
+    <div class="field"><label>Coverage limit ($)</label><input type="number" data-if="coverage" value="${p.coverage||''}"></div>
+    <div class="field"><label>Annual premium ($)</label><input type="number" data-if="premium" value="${p.premium||''}"></div>
+    <div class="field"><label>Deductible ($)</label><input type="number" data-if="deductible" value="${p.deductible||''}"></div>
+    <div class="dsection">Assets covered</div>
+    <div class="field edithint">Enter each address or vehicle name on a separate line — used to detect coverage gaps.</div>
+    <div class="field"><textarea data-if="assets_raw" rows="4" style="width:100%;box-sizing:border-box;border:1px solid var(--line-strong);border-radius:8px;padding:9px 11px;font-family:IBM Plex Sans;font-size:13px;resize:vertical">${(p.assets||[]).join('\n')}</textarea></div>
+    <div class="dsection">Notes</div>
+    <div class="field"><input type="text" data-if="notes" value="${esc(p.notes||'')}"></div>
+    <button class="btn danger" data-delins>Delete this policy</button>`;
+  const numI=['coverage','premium','deductible'];
+  document.querySelectorAll('#drawerBody [data-if]').forEach(el=>{
+    const ev=el.tagName==='SELECT'?'change':'input';
+    el.addEventListener(ev,e=>{
+      const f=e.target.dataset.if;
+      if(f==='assets_raw'){p.assets=e.target.value.split('\n').map(s=>s.trim()).filter(Boolean);}
+      else if(numI.includes(f)){p[f]=parseFloat(e.target.value)||0;}
+      else p[f]=e.target.value;
+      save();recomputeAll();
+      document.getElementById('dStat').innerHTML=`<div>Coverage<b>${fmt(p.coverage||0)}</b></div><div>Premium/yr<b>${fmt(p.premium||0)}</b></div><div>Deductible<b>${fmt(p.deductible||0)}</b></div>`;
+    });
+  });
+  let armed=false,timer=null;
+  document.querySelector('#drawerBody [data-delins]').addEventListener('click',e=>{
+    if(!armed){armed=true;e.currentTarget.textContent='Tap again to confirm delete';clearTimeout(timer);timer=setTimeout(()=>{armed=false;const b=document.querySelector('[data-delins]');if(b)b.textContent='Delete this policy';},2600);return;}
+    state.insurance=state.insurance.filter(x=>x.id!==p.id);save();closeDrawer();recomputeAll();toast('Policy deleted');
+  });
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function addInsurance(){
+  if(!state.insurance)state.insurance=[];
+  const id='ins'+Date.now();
+  state.insurance.push({id,name:'',kind:'property',carrier:'',policyNum:'',renews:'',coverage:0,premium:0,deductible:0,assets:[],notes:''});
+  save();recomputeAll();openInsDrawer(id);
+}
 
 /* ═══════════════ LOANS ══════════════════════════════════════ */
 function amort(balance,payment,ratePct){
@@ -1975,6 +2150,13 @@ function buildAttention(){
     }
   });
 
+  // Expiring / expired policies
+  ;(state.insurance||[]).forEach(p=>{
+    const st=insStatus(p);
+    if(st==='expired')items.push({level:'urgent',icon:'⚠',title:p.name+' — policy expired',detail:(p.carrier||'Insurer')+' · renew immediately to maintain coverage.',act:null});
+    else if(st==='expiring'){const days=Math.ceil((new Date(p.renews)-today)/(864e5));items.push({level:days<=30?'urgent':'warn',icon:'📋',title:p.name+' renews in '+days+' day'+(days===1?'':'s'),detail:(p.carrier||'Insurer')+' · '+fmtDate(p.renews)+'. Contact agent to renew.',act:null});}
+  });
+
   // No snapshots
   if(!state.snapshots||!state.snapshots.length){
     items.push({level:'info',icon:'📈',title:'No net worth snapshots yet',detail:'Save your first snapshot to start tracking your trend over time.',act:'snapshots'});
@@ -2125,7 +2307,7 @@ function doExport(){
   setTimeout(()=>window.print(),300);
 }
 
-const MORE_VIEWS=['vehicles','entities','snapshots','portfolio','loans'];
+const MORE_VIEWS=['vehicles','entities','snapshots','portfolio','loans','insurance'];
 function switchView(v){
   document.querySelectorAll('#nav button,#mobTabs button[data-view],#moreSheet button[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const moreBtn=document.getElementById('mobMore');
@@ -2143,6 +2325,7 @@ document.getElementById('editToggle').addEventListener('click',e=>{editMode=!edi
 document.getElementById('snapBtn').addEventListener('click',()=>saveSnapshot(false));
 document.getElementById('backupBtn').addEventListener('click',doBackup);
 document.getElementById('addVeh').addEventListener('click',addVehicle);
+document.getElementById('addIns').addEventListener('click',addInsurance);
 document.getElementById('mobMore').addEventListener('click',()=>{
   const sheet=document.getElementById('moreSheet');
   sheet.classList.contains('show')?closeMoreSheet():openMoreSheet();
