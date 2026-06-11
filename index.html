@@ -297,6 +297,23 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* Loans view */
+  .ln-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .ln-card{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:15px 17px;box-shadow:var(--shadow)}
+  .ln-card .lnh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .ln-card .lnn{font-weight:700;font-size:14.5px}
+  .ln-card .lnb{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600}
+  .ln-card .lnm{font-size:11.5px;color:var(--ink-faint);margin:2px 0 10px}
+  .ln-split{display:flex;height:9px;border-radius:5px;overflow:hidden;margin-bottom:6px;background:var(--line)}
+  .ln-split .pr{background:var(--green)}.ln-split .in{background:var(--brick-soft)}
+  .ln-rows{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+  .ln-rows div{display:flex;justify-content:space-between}
+  .ln-rows .v{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:500}
+  .ln-rows .v.pos{color:var(--green)}.ln-rows .v.neg{color:var(--brick)}
+  .ln-need{font-size:11.5px;color:var(--brass-deep);background:rgba(168,126,51,.07);border:1px dashed var(--brass);border-radius:8px;padding:8px 11px;margin-top:9px}
+  .ln-io{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--brick);font-weight:700}
+  @media(max-width:560px){.ln-grid{grid-template-columns:1fr}}
+
   /* Portfolio view */
   .pf-bar{height:14px;border-radius:7px;overflow:hidden;display:flex;margin:14px 0 8px;box-shadow:var(--shadow)}
   .pf-bar div{height:100%}
@@ -594,9 +611,14 @@
     <div class="group-label">Holdings</div>
     <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
     <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
+    <button data-view="loans">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V8l4-4h10l4 4v13M3 21h18M12 11v6M9 14h6"/></svg>
+      <span>Loans</span>
+    </button>
     <button data-view="portfolio"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>Portfolio</button>
     <button data-view="cashflow"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cash Flow</button>
-        <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
+        <button data-view="loans"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V8l4-4h10l4 4v13M3 21h18M12 11v6M9 14h6"/></svg>Loans</button>
+    <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
     <button data-view="vehicles"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>Vehicles</button>
         <button data-view="snapshots"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>Trend</button>
   </nav>
@@ -780,6 +802,16 @@
     <p class="footnote">Each card rolls up all accounts and properties tagged to that entity. Cash flow = active monthly rent minus all debt service payments. Health score weighs cash-flow positivity, leverage ratio, and account balance.</p>
   </section>
 
+  <!-- LOANS -->
+  <section class="view" id="view-loans">
+    <div class="topbar">
+      <div><div class="eyebrow">Amortization &amp; payoff</div><h1>Loans</h1></div>
+    </div>
+    <div class="stats stagger" id="lnStats"></div>
+    <div class="ln-grid" id="lnGrid"></div>
+    <p class="footnote">Projections assume the current balance, payment, and rate hold steady — extra principal payments shorten the schedule. Where the payment only covers interest (lines of credit), no payoff date exists by design. Add missing rates in each property's editor to unlock its projection.</p>
+  </section>
+
   <!-- PORTFOLIO -->
   <section class="view" id="view-portfolio">
     <div class="topbar">
@@ -845,6 +877,7 @@
     <label class="fld">Name on statement<input type="text" id="expName" value="Chance Family"></label>
     <label class="fld">Statement date<input type="date" id="expDate"></label>
     <label class="fld">Prepared for (optional)<input type="text" id="expFor" placeholder="e.g. First Horizon Bank"></label>
+    <label class="fld">Entity scope<select id="expEntity"><option value="">All entities — full picture</option></select></label>
     <div class="exp-opts">
       <label><input type="checkbox" id="optNW" checked> Net worth statement</label>
       <label><input type="checkbox" id="optRE" checked> Real estate schedule</label>
@@ -1033,7 +1066,77 @@ function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEac
 function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
 function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const vehVal=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);const phys=state.physical.reduce((s,x)=>s+x.v,0)+vehVal;const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
 
-function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderPortfolio();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderPortfolio();renderLoans();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+
+/* ═══════════════ LOANS ══════════════════════════════════════ */
+function amort(balance,payment,ratePct){
+  if(!balance||balance<=0)return null;
+  if(!ratePct||!payment)return{needs:!ratePct,noPayment:!payment};
+  const r=ratePct/100/12;
+  const interest=balance*r;
+  if(payment<=interest)return{io:true,interest,principal:0};
+  const n=Math.log(payment/(payment-balance*r))/Math.log(1+r);
+  const months=Math.ceil(n);
+  const totalPaid=payment*n;
+  const payoff=new Date();payoff.setMonth(payoff.getMonth()+months);
+  return{interest,principal:payment-interest,months,payoff,totalInterest:totalPaid-balance};
+}
+
+function loanItems(){
+  const items=[];
+  ;(state.properties||[]).forEach(p=>{
+    if(p.loan>0)items.push({name:p.addr,sub:(p.lender||'Property loan')+(p.note?' · '+p.note:''),entity:normEnt(p.owner||'Personal'),balance:p.loan,payment:p.payment||0,rate:p.rate||0,kind:'mortgage'});
+  });
+  ;(state.accounts||[]).forEach(a=>{
+    if(!a.excluded&&(a.kind==='loan'||a.kind==='credit')&&a.balance>0)items.push({name:a.name,sub:(a.institution||'')+(a.maturity?' · matures '+fmtDate(a.maturity):''),entity:normEnt(a.entity||'Personal'),balance:a.balance,payment:a.payment||0,rate:a.rate||0,kind:a.kind});
+  });
+  return items.sort((a,b)=>b.balance-a.balance);
+}
+
+function renderLoans(){
+  const items=loanItems();
+  const statsEl=document.getElementById('lnStats');
+  if(!items.length){statsEl.innerHTML='<div class="empty"><b>No active loans</b>Debt-free — nothing to amortize.</div>';document.getElementById('lnGrid').innerHTML='';return;}
+  let totBal=0,totPr=0,totInt=0,rated=0,ratedBal=0,wRate=0;
+  const cards=items.map(it=>{
+    totBal+=it.balance;
+    const a=amort(it.balance,it.payment,it.rate);
+    let body='';
+    if(a&&a.interest!=null&&!a.io&&a.months){
+      totPr+=a.principal;totInt+=a.interest;rated++;ratedBal+=it.balance;wRate+=it.rate*it.balance;
+      const prPct=a.principal/(it.payment||1)*100;
+      body=`<div class="ln-split"><div class="pr" style="width:${prPct.toFixed(1)}%"></div><div class="in" style="width:${(100-prPct).toFixed(1)}%"></div></div>
+      <div class="ln-rows">
+        <div><span>Principal / mo</span><span class="v pos">+${fmt(a.principal)}</span></div>
+        <div><span>Interest / mo</span><span class="v neg">−${fmt(a.interest)}</span></div>
+        <div><span>Payoff</span><span class="v">${a.payoff.toLocaleDateString('en-US',{month:'short',year:'numeric'})} · ${Math.floor(a.months/12)}y ${a.months%12}m</span></div>
+        <div><span>Interest remaining</span><span class="v neg">${fmt(a.totalInterest)}</span></div>
+      </div>`;
+    }else if(a&&a.io){
+      totInt+=a.interest;rated++;ratedBal+=it.balance;wRate+=it.rate*it.balance;
+      body=`<div class="ln-rows">
+        <div><span>Interest / mo</span><span class="v neg">−${fmt(a.interest)}</span></div>
+        <div><span><span class="ln-io">Interest-only</span></span><span class="v">payment ≤ interest — balance never amortizes</span></div>
+      </div>`;
+    }else if(a&&a.noPayment){
+      body=`<div class="ln-need">No monthly payment on file — add it to project this loan.</div>`;
+    }else{
+      body=`<div class="ln-need">Add the loan rate ${it.kind==='mortgage'?'in this property\u2019s editor':'on this account'} to unlock principal/interest split and payoff date.</div>`;
+    }
+    return`<div class="ln-card">
+      <div class="lnh"><span class="lnn">${esc(it.name)}</span><span class="lnb">${fmt(it.balance)}</span></div>
+      <div class="lnm">${esc(it.entity)}${it.sub?' · '+esc(it.sub):''}${it.rate?' · '+it.rate+'%':''}${it.payment?' · '+fmt(it.payment)+'/mo':''}</div>
+      ${body}
+    </div>`;
+  }).join('');
+  const avgRate=ratedBal>0?(wRate/ratedBal):0;
+  statsEl.innerHTML=`
+    <div class="stat"><div class="lab">Total Debt</div><div class="val">${fmt(totBal)}</div><div class="meta">${items.length} loans</div></div>
+    <div class="stat"><div class="lab">Equity Build / mo</div><div class="val" style="color:var(--green)">+${fmt(totPr)}</div><div class="meta pos">principal across rated loans</div></div>
+    <div class="stat"><div class="lab">Interest Cost / mo</div><div class="val" style="color:var(--brick)">−${fmt(totInt)}</div><div class="meta">${fmt(totInt*12)}/yr</div></div>
+    <div class="stat"><div class="lab">Avg Rate</div><div class="val">${avgRate?avgRate.toFixed(2)+'%':'—'}</div><div class="meta">${rated} of ${items.length} loans have rates</div></div>`;
+  document.getElementById('lnGrid').innerHTML=cards;
+}
 
 /* ═══════════════ PORTFOLIO ══════════════════════════════════ */
 const PF_CLASSES={cash:{l:'Cash',c:'#7FA99B'},stock:{l:'Stocks',c:'#11302A'},fund:{l:'Mutual funds',c:'#A87E33'},etf:{l:'ETFs',c:'#C9A35C'},crypto:{l:'Crypto trusts',c:'#9E4B3A'},pfd:{l:'Preferred',c:'#586C65'}};
@@ -1527,6 +1630,7 @@ function renderDrawerBody(p){
     <div class="field"><label>Current value</label><input type="number" data-f="value" value="${p.value}"></div>
     <div class="field"><label>Loan balance</label><input type="number" data-f="loan" value="${p.loan}"></div>
     <div class="field"><label>Monthly payment</label><input type="number" data-f="payment" value="${p.payment}"></div>
+    <div class="field"><label>Loan rate %</label><input type="number" step="0.01" data-f="rate" value="${p.rate||''}" placeholder="e.g. 6.75"></div>
     <div class="field"><label>Annual taxes</label><input type="number" data-f="taxes" value="${p.taxes}"></div>
     <div class="dsection">Leases · ${fmt(activeRent(p))}/mo active</div>`;
   if(p.leases.length){
@@ -1544,7 +1648,7 @@ function renderDrawerBody(p){
   wireDrawer(p);
 }
 function wireDrawer(p){
-  const numF=['value','loan','payment','taxes'];
+  const numF=['value','loan','payment','taxes','rate'];
   document.querySelectorAll('#drawerBody [data-f]').forEach(el=>{
     const ev=el.tagName==='SELECT'?'change':'input';
     el.addEventListener(ev,e=>{
@@ -1930,9 +2034,30 @@ function fmtNeg(n){return n<0?'−$'+Math.abs(Math.round(n)).toLocaleString('en-
 function rblock(title,items){const rows=items.filter(x=>x.v>0);if(!rows.length)return '';return `<div class="rsub">${title}</div>`+rows.map(x=>`<div class="rline"><span>${esc(x.k)}</span><span class="v">${fmt(x.v)}</span></div>`).join('');}
 function buildReport(o){
   const t=totals(),re=reTotals();
+  const ENT=o.entity||'';
+  const P=(state.properties||[]).filter(p=>!ENT||normEnt(p.owner||'Personal')===ENT);
+  const A=(state.accounts||[]).filter(a=>!a.excluded&&(!ENT||normEnt(a.entity||'Personal')===ENT));
+  const V=(state.vehicles||[]).filter(v=>!ENT||normEnt(v.entity||'2nd Chance')===ENT);
   const gen=new Date().toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
-  let html=`<div class="rpt"><div class="rhead"><div><div class="rmark">Chance Wealth</div><div class="rtitle">Personal Financial Statement</div></div><div class="rmeta"><b>${esc(o.name)}</b><br>As of ${fmtDate(o.date)}${o.preparedFor?'<br>Prepared for '+esc(o.preparedFor):''}</div></div>`;
-  if(o.nw){
+  const title=ENT?esc(ENT)+' — Entity Financial Statement':'Personal Financial Statement';
+  let html=`<div class="rpt"><div class="rhead"><div><div class="rmark">Chance Wealth</div><div class="rtitle">${title}</div></div><div class="rmeta"><b>${esc(o.name)}</b><br>As of ${fmtDate(o.date)}${o.preparedFor?'<br>Prepared for '+esc(o.preparedFor):''}</div></div>`;
+  if(o.nw&&ENT){
+    const e=entityRollup().find(x=>x.name===ENT);
+    if(e){
+      html+=`<div class="rnw"><div><div class="l">Entity Net Position</div><div class="n big">${fmtNeg(e.equity)}</div></div><div style="text-align:right"><div class="l">Entity Assets</div><div class="n">${fmt(e.totalAssets)}</div></div><div style="text-align:right"><div class="l">Entity Debt</div><div class="n">${fmt(e.totalDebt)}</div></div></div>
+      <div class="rcols"><div class="rcol"><h4>Position</h4>
+        <div class="rline"><span>Cash, deposits &amp; investments</span><span class="v">${fmt(e.deposits)}</span></div>
+        <div class="rline"><span>Real estate (${e.properties.length})</span><span class="v">${fmt(e.propValue)}</span></div>
+        <div class="rtot assets"><span>Total Assets</span><span class="v">${fmt(e.totalAssets)}</span></div></div>
+      <div class="rcol"><h4>Obligations &amp; Cash Flow</h4>
+        <div class="rline"><span>Total debt</span><span class="v">${fmt(e.totalDebt)}</span></div>
+        <div class="rline"><span>Rent income / mo</span><span class="v">${fmt(e.propRent)}</span></div>
+        <div class="rline"><span>Debt service / mo</span><span class="v">${fmt(e.propDebt)}</span></div>
+        <div class="rtot"><span>Net cash flow / mo</span><span class="v">${e.cashflow>=0?'+':''}${fmtNeg(e.cashflow)}</span></div>
+        <div class="rtot"><span>Net Position</span><span class="v">${fmtNeg(e.equity)}</span></div></div></div>`;
+    }
+  }
+  else if(o.nw){
     html+=`<div class="rnw"><div><div class="l">Net Worth</div><div class="n big">${fmt(t.nw)}</div></div><div style="text-align:right"><div class="l">Total Assets</div><div class="n">${fmt(t.assets)}</div></div><div style="text-align:right"><div class="l">Total Liabilities</div><div class="n">${fmt(t.liab)}</div></div></div>
       <div class="rcols"><div class="rcol"><h4>Assets</h4>
         <div class="rsub">Cash &amp; Bank Deposits</div>
@@ -1956,32 +2081,32 @@ function buildReport(o){
   if(o.re){
     html+=`<section class="${o.nw?'page-break':''}"><h4>Real Estate Owned</h4><table><thead><tr><th>Property</th><th>Entity</th><th>Type</th><th>Value</th><th>Loan</th><th>Equity</th><th>Rent/mo</th><th>Pmt/mo</th><th>Taxes/yr</th></tr></thead><tbody>`;
     let sv=0,sl=0,se=0,sr=0,sp=0,sx=0;
-    state.properties.forEach(p=>{const eq=p.value-p.loan,r=activeRent(p);sv+=p.value;sl+=p.loan;se+=eq;sr+=r;sp+=p.payment;sx+=p.taxes;
+    P.forEach(p=>{const eq=p.value-p.loan,r=activeRent(p);sv+=p.value;sl+=p.loan;se+=eq;sr+=r;sp+=p.payment;sx+=p.taxes;
       html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(p.owner)}</td><td class="txt">${p.kind==='residential'?'Residential':'Investment'}</td><td>${fmt(p.value)}</td><td>${fmt(p.loan)}</td><td>${fmtNeg(eq)}</td><td>${fmt(r)}</td><td>${fmt(p.payment)}</td><td>${fmt(p.taxes)}</td></tr>`;});
-    html+=`<tr class="totrow"><td class="txt">Totals · ${state.properties.length} properties</td><td></td><td></td><td>${fmt(sv)}</td><td>${fmt(sl)}</td><td>${fmtNeg(se)}</td><td>${fmt(sr)}</td><td>${fmt(sp)}</td><td>${fmt(sx)}</td></tr></tbody></table></section>`;
+    html+=`<tr class="totrow"><td class="txt">Totals · ${P.length} properties</td><td></td><td></td><td>${fmt(sv)}</td><td>${fmt(sl)}</td><td>${fmtNeg(se)}</td><td>${fmt(sr)}</td><td>${fmt(sp)}</td><td>${fmt(sx)}</td></tr></tbody></table></section>`;
   }
   if(o.roll){
     html+=`<section style="margin-top:18px"><h4>Rent Roll</h4><table><thead><tr><th>Property</th><th>Unit</th><th>Term</th><th>Status</th><th>Rent/mo</th></tr></thead><tbody>`;
     let active=0,any=false;
-    state.properties.forEach(p=>p.leases.forEach(l=>{any=true;const act=leaseActive(l);if(act)active+=l.rent;
+    P.forEach(p=>p.leases.forEach(l=>{any=true;const act=leaseActive(l);if(act)active+=l.rent;
       const st=leaseStatus(l);
       const term=l.begin?fmtDateShort(l.begin)+(l.end?' – '+fmtDateShort(l.end):' – m/m'):'Month-to-month';
       html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(l.u)}</td><td class="txt">${term}</td><td class="txt">${st==='Expired'?'<span class="exp">Expired</span>':st}</td><td>${fmt(l.rent)}</td></tr>`;}));
     if(!any)html+=`<tr><td class="txt" colspan="5">No leases on file.</td></tr>`;
     html+=`<tr class="totrow"><td class="txt">Total active monthly rent</td><td></td><td></td><td></td><td>${fmt(active)}</td></tr></tbody></table></section>`;
   }
-  if(o.veh&&(state.vehicles||[]).length){
+  if(o.veh&&V.length){
     html+=`<section style="margin-top:18px"><h4>Vehicle Fleet</h4><table><thead><tr><th>Vehicle</th><th>Year / Make / Model</th><th>Purpose</th><th>Entity</th><th>Value</th><th>Cost</th><th>Income/yr</th></tr></thead><tbody>`;
     let vv=0,vc=0,vi=0;
-    const vsorted=(state.vehicles||[]).slice().sort((a,b)=>(a.purpose||'').localeCompare(b.purpose||'')||a.year-b.year);
+    const vsorted=V.slice().sort((a,b)=>(a.purpose||'').localeCompare(b.purpose||'')||a.year-b.year);
     vsorted.forEach(v=>{vv+=v.value||0;vc+=v.purchasePrice||0;vi+=v.income12m||0;
       html+=`<tr><td class="txt">${esc(v.name||'—')}</td><td class="txt">${v.year} ${esc(v.make)} ${esc(v.model)}</td><td class="txt">${PURPOSE_LABEL[v.purpose]||'Keeper'}</td><td class="txt">${esc(normEnt(v.entity||'2nd Chance'))}</td><td>${v.value?fmt(v.value):'—'}</td><td>${v.purchasePrice?fmt(v.purchasePrice):'—'}</td><td>${v.income12m?fmt(v.income12m):'—'}</td></tr>`;});
     html+=`<tr class="totrow"><td class="txt">Totals · ${vsorted.length} vehicles</td><td></td><td></td><td></td><td>${fmt(vv)}</td><td>${fmt(vc)}</td><td>${fmt(vi)}</td></tr></tbody></table></section>`;
   }
-  if(o.acct&&(state.accounts||[]).length){
+  if(o.acct&&A.length){
     html+=`<section style="margin-top:18px"><h4>Bank Accounts &amp; Loans</h4><table><thead><tr><th>Account</th><th>Institution</th><th>Type</th><th>Entity</th><th>Rate</th><th>Pmt/mo</th><th>Balance</th></tr></thead><tbody>`;
     let dep=0,owed=0;
-    const sorted=state.accounts.filter(a=>!a.excluded).sort((a,b)=>(isDebt(a.kind)?1:0)-(isDebt(b.kind)?1:0));
+    const sorted=A.slice().sort((a,b)=>(isDebt(a.kind)?1:0)-(isDebt(b.kind)?1:0));
     sorted.forEach(a=>{const d=isDebt(a.kind);if(d)owed+=a.balance||0;else dep+=a.balance||0;
       html+=`<tr><td class="txt">${esc(a.name)}</td><td class="txt">${esc(a.institution||'—')}</td><td class="txt">${kindLabel(a.kind)}</td><td class="txt">${esc(a.entity||'Personal')}</td><td>${a.rate?a.rate+'%':'—'}</td><td>${a.payment?fmt(a.payment):'—'}</td><td>${d?'(':''}${fmt(a.balance||0)}${d?')':''}</td></tr>`;});
     html+=`<tr class="totrow"><td class="txt">Totals — deposits ${fmt(dep)}${owed?' · owed '+fmt(owed):''}</td><td></td><td></td><td></td><td></td><td></td><td>${fmt(dep-owed)}</td></tr></tbody></table></section>`;
@@ -1989,16 +2114,18 @@ function buildReport(o){
   html+=`<div class="rfoot">Real-estate asset and mortgage balances are derived from the Real Estate Owned schedule and reconcile to it exactly. Property and personal-asset values are owner-reported estimates of fair value and do not constitute appraisals. Generated ${gen} via Chance Wealth.</div></div>`;
   return html;
 }
-function openExportModal(){document.getElementById('expDate').value=new Date().toISOString().slice(0,10);document.getElementById('expScrim').classList.add('show');document.getElementById('expModal').classList.add('show');}
+function openExportModal(){document.getElementById('expDate').value=new Date().toISOString().slice(0,10);
+  const sel=document.getElementById('expEntity');
+  sel.innerHTML='<option value="">All entities — full picture</option>'+entityRollup().map(e=>`<option value="${esc(e.name)}">${esc(e.name)} only</option>`).join('');document.getElementById('expScrim').classList.add('show');document.getElementById('expModal').classList.add('show');}
 function closeExport(){document.getElementById('expScrim').classList.remove('show');document.getElementById('expModal').classList.remove('show');}
 function doExport(){
-  const o={name:document.getElementById('expName').value||'Chance Family',date:document.getElementById('expDate').value||state.asOf,preparedFor:document.getElementById('expFor').value.trim(),nw:document.getElementById('optNW').checked,re:document.getElementById('optRE').checked,roll:document.getElementById('optRoll').checked,acct:document.getElementById('optAcct').checked,veh:document.getElementById('optVeh').checked};
+  const o={name:document.getElementById('expName').value||'Chance Family',date:document.getElementById('expDate').value||state.asOf,preparedFor:document.getElementById('expFor').value.trim(),nw:document.getElementById('optNW').checked,re:document.getElementById('optRE').checked,roll:document.getElementById('optRoll').checked,acct:document.getElementById('optAcct').checked,veh:document.getElementById('optVeh').checked,entity:document.getElementById('expEntity').value};
   document.getElementById('print-report').innerHTML=buildReport(o);
   closeExport();
   setTimeout(()=>window.print(),300);
 }
 
-const MORE_VIEWS=['vehicles','entities','snapshots','portfolio'];
+const MORE_VIEWS=['vehicles','entities','snapshots','portfolio','loans'];
 function switchView(v){
   document.querySelectorAll('#nav button,#mobTabs button[data-view],#moreSheet button[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const moreBtn=document.getElementById('mobMore');
