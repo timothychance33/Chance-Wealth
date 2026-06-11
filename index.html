@@ -467,9 +467,14 @@
   .rpt .page-break{break-before:page;page-break-before:always;padding-top:8px}
 
   @media print{
-    aside,main,.drawer,.scrim,.toast,.modal,.mscrim{display:none !important}
+    aside,main,.drawer,.scrim,.toast,.modal,.mscrim,
+    .mob-tabs,.more-sheet,.more-scrim,.save-dot,.auth-wall{display:none !important}
     #print-report{display:block !important}
     body{background:#fff;display:block}
+    #print-report table{break-inside:auto}
+    #print-report tr{break-inside:avoid}
+    #print-report section{break-inside:avoid-page}
+    #print-report h4{break-after:avoid}
     @page{margin:0.55in 0.5in}
   }
 
@@ -519,7 +524,10 @@
     .card h2{font-size:15px;padding:13px 16px 0}
     .ledger{padding:5px 16px 12px}
     .save-dot{bottom:calc(62px + env(safe-area-inset-bottom));right:12px}
-    aside{padding:7px 14px;padding-top:max(7px,env(safe-area-inset-top))}
+    aside{height:calc(46px + env(safe-area-inset-top));min-height:0;max-height:calc(46px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 14px 0;overflow:hidden;display:flex;align-items:center;flex-wrap:nowrap;gap:0}
+    .brand{display:flex;align-items:center;margin:0;padding:0}
+    .brand .mark{font-size:15px;gap:7px;margin:0;padding:0;line-height:1}
+    .brand .mark svg{width:17px;height:20px}
   }
   @media(max-width:380px){
     .hero .nw{font-size:27px}
@@ -804,6 +812,7 @@
       <label><input type="checkbox" id="optRE" checked> Real estate schedule</label>
       <label><input type="checkbox" id="optRoll" checked> Rent roll (active leases)</label>
       <label><input type="checkbox" id="optAcct" checked> Bank accounts &amp; loans schedule</label>
+      <label><input type="checkbox" id="optVeh" checked> Vehicle fleet schedule</label>
     </div>
     <div class="modal-actions">
       <button class="btn ghost" id="expCancel">Cancel</button>
@@ -1782,6 +1791,7 @@ function doBackup(){
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 
 const fmtDateShort=s=> s? new Date(s).toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
+function fmtNeg(n){return n<0?'−$'+Math.abs(Math.round(n)).toLocaleString('en-US'):fmt(n);}
 function rblock(title,items){const rows=items.filter(x=>x.v>0);if(!rows.length)return '';return `<div class="rsub">${title}</div>`+rows.map(x=>`<div class="rline"><span>${esc(x.k)}</span><span class="v">${fmt(x.v)}</span></div>`).join('');}
 function buildReport(o){
   const t=totals(),re=reTotals();
@@ -1790,15 +1800,21 @@ function buildReport(o){
   if(o.nw){
     html+=`<div class="rnw"><div><div class="l">Net Worth</div><div class="n big">${fmt(t.nw)}</div></div><div style="text-align:right"><div class="l">Total Assets</div><div class="n">${fmt(t.assets)}</div></div><div style="text-align:right"><div class="l">Total Liabilities</div><div class="n">${fmt(t.liab)}</div></div></div>
       <div class="rcols"><div class="rcol"><h4>Assets</h4>
-        ${rblock('Cash &amp; Equivalents',state.cash)}
+        <div class="rsub">Cash &amp; Bank Deposits</div>
+        ${state.cash.filter(x=>x.v>0).map(x=>`<div class="rline"><span>${esc(x.k)}</span><span class="v">${fmt(x.v)}</span></div>`).join('')}
+        ${(()=>{const dep=(state.accounts||[]).filter(a=>!a.excluded&&!isDebt(a.kind)&&a.kind!=='investment').reduce((s,a)=>s+(a.balance||0),0);return dep>0?`<div class="rline"><span>Bank accounts — see schedule</span><span class="v">${fmt(dep)}</span></div>`:'';})()}
+        <div class="rsub">Investments &amp; Retirement</div>
+        ${(()=>{const inv=(state.accounts||[]).filter(a=>!a.excluded&&a.kind==='investment').reduce((s,a)=>s+(a.balance||0),0);return inv>0?`<div class="rline"><span>Investment accounts — see schedule</span><span class="v">${fmt(inv)}</span></div>`:'<div class="rline"><span>None reported</span><span class="v">$0</span></div>';})()}
+        ${state.longTerm.filter(x=>x.v>0).map(x=>`<div class="rline"><span>${esc(x.k)}</span><span class="v">${fmt(x.v)}</span></div>`).join('')}
         <div class="rsub">Real Estate</div><div class="rline"><span>Real estate — see schedule</span><span class="v">${fmt(re.value)}</span></div>
+        ${(()=>{const vv=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);return vv>0?`<div class="rsub">Vehicles</div><div class="rline"><span>Vehicle fleet — see schedule</span><span class="v">${fmt(vv)}</span></div>`:'';})()}
         ${rblock('Other Physical Assets',state.physical)}
-        ${rblock('Long-Term &amp; Retirement',state.longTerm)}
         <div class="rtot assets"><span>Total Assets</span><span class="v">${fmt(t.assets)}</span></div></div>
       <div class="rcol"><h4>Liabilities</h4>
         <div class="rsub">Mortgages</div><div class="rline"><span>Property loans — see schedule</span><span class="v">${fmt(re.loan)}</span></div>
+        ${(()=>{const biz=(state.accounts||[]).filter(a=>!a.excluded&&isDebt(a.kind)).reduce((s,a)=>s+(a.balance||0),0);return biz>0?`<div class="rsub">Business &amp; Operating Loans</div><div class="rline"><span>Lines of credit &amp; loans — see schedule</span><span class="v">${fmt(biz)}</span></div>`:'';})()}
         ${state.installment.some(x=>x.v>0)?rblock('Installment Debt',state.installment):''}
-        ${state.revolving.some(x=>x.v>0)?rblock('Revolving Debt',state.revolving):'<div class="rsub">Revolving Debt</div><div class="rline"><span>None reported</span><span class="v">$0</span></div>'}
+        ${state.revolving.some(x=>x.v>0)?rblock('Revolving Debt',state.revolving):''}
         <div class="rtot liab"><span>Total Liabilities</span><span class="v">${fmt(t.liab)}</span></div>
         <div class="rtot"><span>Net Worth</span><span class="v">${fmt(t.nw)}</span></div></div></div>`;
   }
@@ -1806,8 +1822,8 @@ function buildReport(o){
     html+=`<section class="${o.nw?'page-break':''}"><h4>Real Estate Owned</h4><table><thead><tr><th>Property</th><th>Entity</th><th>Type</th><th>Value</th><th>Loan</th><th>Equity</th><th>Rent/mo</th><th>Pmt/mo</th><th>Taxes/yr</th></tr></thead><tbody>`;
     let sv=0,sl=0,se=0,sr=0,sp=0,sx=0;
     state.properties.forEach(p=>{const eq=p.value-p.loan,r=activeRent(p);sv+=p.value;sl+=p.loan;se+=eq;sr+=r;sp+=p.payment;sx+=p.taxes;
-      html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(p.owner)}</td><td class="txt">${p.kind==='residential'?'Residential':'Investment'}</td><td>${fmt(p.value)}</td><td>${fmt(p.loan)}</td><td>${fmt(eq)}</td><td>${fmt(r)}</td><td>${fmt(p.payment)}</td><td>${fmt(p.taxes)}</td></tr>`;});
-    html+=`<tr class="totrow"><td class="txt">Totals · ${state.properties.length} properties</td><td></td><td></td><td>${fmt(sv)}</td><td>${fmt(sl)}</td><td>${fmt(se)}</td><td>${fmt(sr)}</td><td>${fmt(sp)}</td><td>${fmt(sx)}</td></tr></tbody></table></section>`;
+      html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(p.owner)}</td><td class="txt">${p.kind==='residential'?'Residential':'Investment'}</td><td>${fmt(p.value)}</td><td>${fmt(p.loan)}</td><td>${fmtNeg(eq)}</td><td>${fmt(r)}</td><td>${fmt(p.payment)}</td><td>${fmt(p.taxes)}</td></tr>`;});
+    html+=`<tr class="totrow"><td class="txt">Totals · ${state.properties.length} properties</td><td></td><td></td><td>${fmt(sv)}</td><td>${fmt(sl)}</td><td>${fmtNeg(se)}</td><td>${fmt(sr)}</td><td>${fmt(sp)}</td><td>${fmt(sx)}</td></tr></tbody></table></section>`;
   }
   if(o.roll){
     html+=`<section style="margin-top:18px"><h4>Rent Roll</h4><table><thead><tr><th>Property</th><th>Unit</th><th>Term</th><th>Status</th><th>Rent/mo</th></tr></thead><tbody>`;
@@ -1818,6 +1834,14 @@ function buildReport(o){
       html+=`<tr><td class="txt">${esc(p.addr)}</td><td class="txt">${esc(l.u)}</td><td class="txt">${term}</td><td class="txt">${st==='Expired'?'<span class="exp">Expired</span>':st}</td><td>${fmt(l.rent)}</td></tr>`;}));
     if(!any)html+=`<tr><td class="txt" colspan="5">No leases on file.</td></tr>`;
     html+=`<tr class="totrow"><td class="txt">Total active monthly rent</td><td></td><td></td><td></td><td>${fmt(active)}</td></tr></tbody></table></section>`;
+  }
+  if(o.veh&&(state.vehicles||[]).length){
+    html+=`<section style="margin-top:18px"><h4>Vehicle Fleet</h4><table><thead><tr><th>Vehicle</th><th>Year / Make / Model</th><th>Purpose</th><th>Entity</th><th>Value</th><th>Cost</th><th>Income/yr</th></tr></thead><tbody>`;
+    let vv=0,vc=0,vi=0;
+    const vsorted=(state.vehicles||[]).slice().sort((a,b)=>(a.purpose||'').localeCompare(b.purpose||'')||a.year-b.year);
+    vsorted.forEach(v=>{vv+=v.value||0;vc+=v.purchasePrice||0;vi+=v.income12m||0;
+      html+=`<tr><td class="txt">${esc(v.name||'—')}</td><td class="txt">${v.year} ${esc(v.make)} ${esc(v.model)}</td><td class="txt">${PURPOSE_LABEL[v.purpose]||'Keeper'}</td><td class="txt">${esc(normEnt(v.entity||'2nd Chance'))}</td><td>${v.value?fmt(v.value):'—'}</td><td>${v.purchasePrice?fmt(v.purchasePrice):'—'}</td><td>${v.income12m?fmt(v.income12m):'—'}</td></tr>`;});
+    html+=`<tr class="totrow"><td class="txt">Totals · ${vsorted.length} vehicles</td><td></td><td></td><td></td><td>${fmt(vv)}</td><td>${fmt(vc)}</td><td>${fmt(vi)}</td></tr></tbody></table></section>`;
   }
   if(o.acct&&(state.accounts||[]).length){
     html+=`<section style="margin-top:18px"><h4>Bank Accounts &amp; Loans</h4><table><thead><tr><th>Account</th><th>Institution</th><th>Type</th><th>Entity</th><th>Rate</th><th>Pmt/mo</th><th>Balance</th></tr></thead><tbody>`;
@@ -1833,7 +1857,7 @@ function buildReport(o){
 function openExportModal(){document.getElementById('expDate').value=new Date().toISOString().slice(0,10);document.getElementById('expScrim').classList.add('show');document.getElementById('expModal').classList.add('show');}
 function closeExport(){document.getElementById('expScrim').classList.remove('show');document.getElementById('expModal').classList.remove('show');}
 function doExport(){
-  const o={name:document.getElementById('expName').value||'Chance Family',date:document.getElementById('expDate').value||state.asOf,preparedFor:document.getElementById('expFor').value.trim(),nw:document.getElementById('optNW').checked,re:document.getElementById('optRE').checked,roll:document.getElementById('optRoll').checked,acct:document.getElementById('optAcct').checked};
+  const o={name:document.getElementById('expName').value||'Chance Family',date:document.getElementById('expDate').value||state.asOf,preparedFor:document.getElementById('expFor').value.trim(),nw:document.getElementById('optNW').checked,re:document.getElementById('optRE').checked,roll:document.getElementById('optRoll').checked,acct:document.getElementById('optAcct').checked,veh:document.getElementById('optVeh').checked};
   document.getElementById('print-report').innerHTML=buildReport(o);
   closeExport();
   setTimeout(()=>window.print(),300);
