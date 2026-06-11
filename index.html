@@ -297,6 +297,25 @@
   .veh-card .vflag{font-size:10.5px;color:var(--brass-deep);margin-top:8px}
   @media(max-width:560px){.veh-grid{grid-template-columns:1fr}.veh-stats{grid-template-columns:1fr 1fr}}
 
+  /* Portfolio view */
+  .pf-bar{height:14px;border-radius:7px;overflow:hidden;display:flex;margin:14px 0 8px;box-shadow:var(--shadow)}
+  .pf-bar div{height:100%}
+  .pf-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);margin-bottom:20px}
+  .pf-legend span{display:flex;align-items:center;gap:5px}
+  .pf-legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .pf-table{width:100%;border-collapse:collapse;font-size:13px}
+  .pf-table th{text-align:right;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);padding:6px 8px;border-bottom:1px solid var(--line-strong)}
+  .pf-table th:first-child{text-align:left}
+  .pf-table td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+  .pf-table td:first-child{text-align:left;font-family:"IBM Plex Sans";font-weight:600}
+  .pf-table td .sym{color:var(--ink-faint);font-weight:400;font-size:11px;margin-left:6px}
+  .pf-table tr.hot td:first-child{color:var(--brick)}
+  .pf-flag{background:rgba(158,75,58,.05);border:1px solid var(--brick-soft);border-radius:11px;padding:11px 14px;margin-bottom:8px;font-size:12.5px;line-height:1.5;color:var(--ink)}
+  .pf-flag b{color:var(--brick)}
+  .pf-acct{margin-top:22px}
+  .pf-acct h3{font-family:"Fraunces",serif;font-size:15px;font-weight:500;margin-bottom:2px}
+  .pf-acct .pa-sub{font-size:11.5px;color:var(--ink-faint);margin-bottom:8px}
+
   /* Quick update */
   .q-row{display:grid;grid-template-columns:1fr 130px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
   .q-row .qn{font-size:13.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -575,6 +594,7 @@
     <div class="group-label">Holdings</div>
     <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10h18M3 10l9-6 9 6M5 10v9M9 10v9M15 10v9M19 10v9M3 19h18"/></svg>Accounts</button>
     <button data-view="realestate"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Real Estate</button>
+    <button data-view="portfolio"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>Portfolio</button>
     <button data-view="cashflow"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cash Flow</button>
         <button data-view="entities"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Entities</button>
     <button data-view="vehicles"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5h-2m-8 7a2 2 0 1 0 4 0 2 2 0 0 0-4 0m-8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg>Vehicles</button>
@@ -627,6 +647,10 @@
     <button data-view="snapshots">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
       <span>Trend</span>
+    </button>
+    <button data-view="portfolio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></svg>
+      <span>Portfolio</span>
     </button>
     <button id="moreSignout">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -754,6 +778,20 @@
     <div class="ent-total stagger" id="entTotal"></div>
     <div class="ent-grid stagger" id="entGrid"></div>
     <p class="footnote">Each card rolls up all accounts and properties tagged to that entity. Cash flow = active monthly rent minus all debt service payments. Health score weighs cash-flow positivity, leverage ratio, and account balance.</p>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="view" id="view-portfolio">
+    <div class="topbar">
+      <div><div class="eyebrow">Investment holdings</div><h1>Portfolio</h1></div>
+    </div>
+    <div class="stats stagger" id="pfStats"></div>
+    <div class="pf-bar" id="pfBar"></div>
+    <div class="pf-legend" id="pfLegend"></div>
+    <div id="pfFlags"></div>
+    <div class="card" style="padding:16px 18px"><h2 style="padding:0 0 10px">Combined positions — all accounts</h2><table class="pf-table" id="pfCombined"></table></div>
+    <div id="pfAccounts"></div>
+    <p class="footnote">Holdings are imported from brokerage statements and reflect the statement date, not live prices. Update by sending a new statement to Claude. Positions under $50 are grouped as "small positions."</p>
   </section>
 
   <!-- VEHICLES -->
@@ -995,7 +1033,80 @@ function reTotals(){let value=0,loan=0,rent=0,ds=0,tax=0;state.properties.forEac
 function accountTotals(){let persDep=0,bizDep=0,invest=0,loans=0,credit=0,latest='';(state.accounts||[]).forEach(a=>{if(a.excluded)return;const b=a.balance||0;if(a.kind==='loan')loans+=b;else if(a.kind==='credit')credit+=b;else if(a.kind==='investment')invest+=b;else if((a.entity||'Personal')==='Personal')persDep+=b;else bizDep+=b;if(a.updated&&a.updated>latest)latest=a.updated;});return{persDep,bizDep,invest,loans,credit,latest};}
 function totals(){const re=reTotals();const acct=accountTotals();const cash=state.cash.reduce((s,x)=>s+x.v,0)+acct.persDep;const vehVal=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);const phys=state.physical.reduce((s,x)=>s+x.v,0)+vehVal;const lt=state.longTerm.reduce((s,x)=>s+x.v,0)+acct.bizDep+acct.invest;const invest=state.longTerm.filter(x=>x.tag!=='business').reduce((s,x)=>s+x.v,0)+acct.invest;const assets=cash+phys+re.value+lt;const inst=state.installment.reduce((s,x)=>s+x.v,0)+acct.loans;const rev=state.revolving.reduce((s,x)=>s+x.v,0)+acct.credit;const liab=re.loan+inst+rev;return{cash,phys,re,lt,invest,assets,inst,rev,liab,acct,nw:assets-liab};}
 
-function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+function renderAll(){renderHero();renderRail();renderLedgers();renderGlance();renderRE();renderAccounts();renderVehicles();renderEntities();renderCashFlow();renderPortfolio();renderSnapshots();buildAttention();document.getElementById('asof').textContent=fmtDate(state.asOf);}
+
+/* ═══════════════ PORTFOLIO ══════════════════════════════════ */
+const PF_CLASSES={cash:{l:'Cash',c:'#7FA99B'},stock:{l:'Stocks',c:'#11302A'},fund:{l:'Mutual funds',c:'#A87E33'},etf:{l:'ETFs',c:'#C9A35C'},crypto:{l:'Crypto trusts',c:'#9E4B3A'},pfd:{l:'Preferred',c:'#586C65'}};
+
+function pfData(){
+  const accts=(state.accounts||[]).filter(a=>a.kind==='investment'&&Array.isArray(a.holdings)&&a.holdings.length);
+  const noDetail=(state.accounts||[]).filter(a=>a.kind==='investment'&&(!a.holdings||!a.holdings.length));
+  const byClass={},bySym={};
+  let total=0;
+  accts.forEach(a=>a.holdings.forEach(h=>{
+    total+=h.v;
+    byClass[h.c]=(byClass[h.c]||0)+h.v;
+    const key=h.c==='cash'?'CASH':h.s;
+    if(!bySym[key])bySym[key]={s:key,n:h.c==='cash'?'Cash & money market':h.n,v:0,accts:new Set(),c:h.c};
+    bySym[key].v+=h.v;bySym[key].accts.add(a.name);
+  }));
+  const positions=Object.values(bySym).sort((a,b)=>b.v-a.v);
+  return{accts,noDetail,byClass,positions,total};
+}
+
+function renderPortfolio(){
+  const d=pfData();
+  const statsEl=document.getElementById('pfStats');
+  if(!d.total){
+    statsEl.innerHTML='<div class="empty"><b>No holdings imported yet</b>Send an investment statement to Claude in chat to populate this view.</div>';
+    ['pfBar','pfLegend','pfFlags','pfCombined','pfAccounts'].forEach(id=>document.getElementById(id).innerHTML='');
+    return;
+  }
+  const noDetailTotal=d.noDetail.reduce((s,a)=>s+(a.balance||0),0);
+  const grand=d.total+noDetailTotal;
+
+  const eqPct=((d.byClass.stock||0)+(d.byClass.etf||0)+(d.byClass.pfd||0))/d.total*100;
+  statsEl.innerHTML=`
+    <div class="stat"><div class="lab">Itemized Holdings</div><div class="val">${fmt(d.total)}</div><div class="meta">${d.accts.length} accounts</div></div>
+    <div class="stat"><div class="lab">Total Investable</div><div class="val">${fmt(grand)}</div><div class="meta">incl. ${fmt(noDetailTotal)} not itemized</div></div>
+    <div class="stat"><div class="lab">Equity Exposure</div><div class="val">${eqPct.toFixed(0)}%</div><div class="meta">stocks + ETFs of itemized</div></div>
+    <div class="stat"><div class="lab">Positions</div><div class="val">${d.positions.length}</div><div class="meta">${d.positions.filter(p=>p.v/d.total>0.1).length} over 10%</div></div>`;
+
+  // class bar + legend
+  const order=['stock','fund','etf','crypto','pfd','cash'];
+  document.getElementById('pfBar').innerHTML=order.filter(c=>d.byClass[c]).map(c=>`<div style="width:${(d.byClass[c]/d.total*100).toFixed(2)}%;background:${PF_CLASSES[c].c}"></div>`).join('');
+  document.getElementById('pfLegend').innerHTML=order.filter(c=>d.byClass[c]).map(c=>`<span><i style="background:${PF_CLASSES[c].c}"></i>${PF_CLASSES[c].l} · ${fmt(d.byClass[c])} (${(d.byClass[c]/d.total*100).toFixed(1)}%)</span>`).join('');
+
+  // concentration flags
+  const flags=[];
+  d.positions.filter(p=>p.c!=='cash'&&p.v/d.total>=0.10).forEach(p=>{
+    flags.push(`<b>${esc(p.n)}</b> is ${(p.v/d.total*100).toFixed(1)}% of itemized holdings (${fmt(p.v)} across ${p.accts.size} account${p.accts.size>1?'s':''}).`);
+  });
+  const bonvenu=(d.positions.find(p=>p.s==='BBNA')?.v||0)+noDetailTotal;
+  if(bonvenu/grand>=0.15){
+    flags.push(`<b>Bonvenu exposure</b> — combining BBNA stock with the Principal ESOP and 401(k) plans, roughly ${fmt(bonvenu)} (${(bonvenu/grand*100).toFixed(0)}% of total investable) is tied to a single institution.`);
+  }
+  const cryptoV=d.byClass.crypto||0;
+  if(cryptoV/d.total>=0.05)flags.push(`<b>Crypto trusts</b> total ${fmt(cryptoV)} (${(cryptoV/d.total*100).toFixed(1)}%) via GBTC, BTC mini, and GDLC.`);
+  document.getElementById('pfFlags').innerHTML=flags.map(f=>`<div class="pf-flag">${f}</div>`).join('');
+
+  // combined positions table (group dust)
+  const big=d.positions.filter(p=>p.v>=50);
+  const dust=d.positions.filter(p=>p.v<50);
+  let rows=big.map(p=>`<tr class="${p.c!=='cash'&&p.v/d.total>=0.1?'hot':''}"><td>${esc(p.n)}${p.s!=='CASH'?`<span class="sym">${esc(p.s)}</span>`:''}</td><td>${fmt(p.v)}</td><td>${(p.v/d.total*100).toFixed(1)}%</td><td>${p.accts.size}</td></tr>`).join('');
+  if(dust.length)rows+=`<tr><td>Small positions (${dust.length})</td><td>${fmt(dust.reduce((s,p)=>s+p.v,0))}</td><td><0.1%</td><td>—</td></tr>`;
+  document.getElementById('pfCombined').innerHTML=`<thead><tr><th>Position</th><th>Value</th><th>% of holdings</th><th>Accts</th></tr></thead><tbody>${rows}</tbody>`;
+
+  // per-account
+  document.getElementById('pfAccounts').innerHTML=d.accts.map(a=>{
+    const tot=a.holdings.reduce((s,h)=>s+h.v,0);
+    return`<div class="card pf-acct" style="padding:16px 18px">
+      <h3>${esc(a.name)}</h3><div class="pa-sub">${esc(a.institution||'')} · ${fmt(tot)} · as of ${fmtDate(a.updated)}</div>
+      <table class="pf-table"><thead><tr><th>Holding</th><th>Qty</th><th>Value</th><th>%</th></tr></thead><tbody>
+      ${a.holdings.slice().sort((x,y)=>y.v-x.v).map(h=>`<tr><td>${esc(h.n)}${h.s&&h.c!=='cash'?`<span class="sym">${esc(h.s)}</span>`:''}</td><td>${h.q?h.q.toLocaleString():'—'}</td><td>${fmt(h.v)}</td><td>${tot>0?(h.v/tot*100).toFixed(1):0}%</td></tr>`).join('')}
+      </tbody></table></div>`;
+  }).join('')+(d.noDetail.length?`<p class="footnote">Not itemized: ${d.noDetail.map(a=>esc(a.name)+' ('+fmt(a.balance||0)+')').join(', ')} — employer plan statements can be added the same way.</p>`:'');
+}
 
 /* ═══════════════ VEHICLES ═══════════════════════════════════ */
 const PURPOSE_LABEL={'rental':'Rental','keeper':'Keeper','sell':'Will Sell'};
@@ -1863,7 +1974,7 @@ function doExport(){
   setTimeout(()=>window.print(),300);
 }
 
-const MORE_VIEWS=['vehicles','entities','snapshots'];
+const MORE_VIEWS=['vehicles','entities','snapshots','portfolio'];
 function switchView(v){
   document.querySelectorAll('#nav button,#mobTabs button[data-view],#moreSheet button[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));
   const moreBtn=document.getElementById('mobMore');
