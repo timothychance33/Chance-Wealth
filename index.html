@@ -1549,7 +1549,7 @@ function renderCashFlow(){
 
   // Per-entity breakdown
   const entMap={};
-  d.inflowLines.forEach(l=>{const e=normEnt(l.entity||'Personal');if(!entMap[e])entMap[e]={in:0,out:0};entMap[e].in+=l.amount;});
+  d.inflowLines.forEach(l=>{const e=normEnt(l.entity||'Household');if(!entMap[e])entMap[e]={in:0,out:0};entMap[e].in+=l.amount;});
   d.outflowLines.forEach(l=>{const e=normEnt(l.entity||'Personal');if(!entMap[e])entMap[e]={in:0,out:0};entMap[e].out+=l.amount;});
   const ents=Object.entries(entMap).sort((a,b)=>(b[1].in-b[1].out)-(a[1].in-a[1].out));
   document.getElementById('cfEntGrid').innerHTML=ents.map(([name,e])=>{
@@ -1574,7 +1574,14 @@ const ENTITY_ALIASES={
   '2nd Chance Motors': '2nd Chance',
   'Chance Builders':   'Chance Builders LLC',
 };
-const normEnt=name=>ENTITY_ALIASES[name]||(name||'Personal');
+const normEnt=name=>{
+  if(!name)return'Household';
+  if(ENTITY_ALIASES[name])return ENTITY_ALIASES[name];
+  // case-insensitive fallback
+  const lower=name.toLowerCase();
+  for(const[k,v]of Object.entries(ENTITY_ALIASES)){if(k.toLowerCase()===lower)return v;}
+  return name;
+};
 
 function openEntityDrawer(name){
   const ents=entityRollup();
@@ -1647,11 +1654,11 @@ function entityRollup(){
   });
 
   // manual cash/longTerm/physical/installment go to Personal
-  ;(state.cash||[]).forEach(x=>{if(x.v)ensure('Personal').deposits+=x.v;});
-  ;(state.physical||[]).forEach(x=>{if(x.v)ensure('Personal').deposits+=x.v;});
-  ;(state.longTerm||[]).forEach(x=>{if(x.v){const e=ensure(x.tag==='business'?'2nd Chance':'Personal');e.deposits+=x.v;}});
-  ;(state.installment||[]).forEach(x=>{if(x.v)ensure('Personal').loans+=x.v;});
-  ;(state.revolving||[]).forEach(x=>{if(x.v)ensure('Personal').credit+=x.v;});
+  ;(state.cash||[]).forEach(x=>{if(x.v)ensure('Household').deposits+=x.v;});
+  ;(state.physical||[]).forEach(x=>{if(x.v)ensure('Household').deposits+=x.v;});
+  ;(state.longTerm||[]).forEach(x=>{if(x.v){const e=ensure(normEnt(x.tag==='business'?'2nd Chance':'Household'));e.deposits+=x.v;}});
+  ;(state.installment||[]).forEach(x=>{if(x.v)ensure('Household').loans+=x.v;});
+  ;(state.revolving||[]).forEach(x=>{if(x.v)ensure('Household').credit+=x.v;});
 
   // vehicles
   ;(state.vehicles||[]).forEach(v=>{
@@ -1718,7 +1725,7 @@ function renderEntities(){
       </div>
       <div class="ec-body">
         <div class="ent-row"><span class="ek">Cash &amp; deposits</span><span class="ev ${e.deposits>0?'':'dim'}">${fmt(e.deposits)}</span></div>
-        <div class="ent-row"><span class="ek">Property value</span><span class="ev">${fmt(e.propValue)}</span></div>
+        ${e.properties.length?`<div class="ent-row"><span class="ek">Property value</span><span class="ev">${fmt(e.propValue)}</span></div><div style="font-size:11px;color:var(--ink-faint);padding:0 0 2px">${e.properties.slice(0,2).map(p=>esc(p.addr)).join(', ')}${e.properties.length>2?' +' +(e.properties.length-2)+' more':''}</div>`:''}
         <div class="ent-row"><span class="ek">Total debt</span><span class="ev ${e.totalDebt>0?'neg':'dim'}">${fmt(e.totalDebt)}</span></div>
         <div class="ent-row"><span class="ek">Equity</span><span class="ev ${e.equity>=0?'pos':'neg'}">${fmt(e.equity)}</span></div>
         <div class="ent-divider"></div>
