@@ -382,6 +382,17 @@
   .ms-grid button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
   .ms-grid button.active svg{color:var(--brass-lt)}
 
+  /* Entity detail drawer */
+  .ed-sect{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:14px 0 6px;border-top:1px solid var(--line);margin-top:4px}
+  .ed-sect:first-child{border-top:none;padding-top:0}
+  .ed-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px;gap:10px}
+  .ed-row .el{color:var(--ink-soft);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ed-row .ev{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:13px}
+  .ed-row .ev.pos{color:var(--green)}.ed-row .ev.neg{color:var(--brick)}.ed-row .ev.dim{color:var(--ink-faint)}
+  .ed-divider{height:1px;background:var(--line-strong);margin:8px 0}
+  .ed-export{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;text-align:center;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:12px;border-radius:10px;margin-top:16px}
+  .ed-export:hover{background:var(--ink-2)}
+
   /* Cash flow view */
   .cf-period{display:flex;gap:8px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
   .cf-period .chip{all:unset;cursor:pointer;font-size:12px;font-weight:600;padding:6px 14px;border-radius:18px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
@@ -906,7 +917,7 @@
 </div>
 <div class="toast" id="toast"></div>
 <datalist id="ownerList">
-  <option value="Joint"></option><option value="TLChance"></option><option value="2nd Chance"></option><option value="Chance Builders LLC"></option><option value="A Chance Realty"></option>
+  <option value="Household"></option><option value="TLChance Properties LLC"></option><option value="2nd Chance"></option><option value="Chance Builders LLC"></option><option value="A Chance Realty"></option>
 </datalist>
 
 <div class="mscrim" id="expScrim"></div>
@@ -964,8 +975,8 @@
 </div>
 
 <datalist id="entityList">
-  <option value="Personal"></option>
-  <option value="TLChance"></option>
+  <option value="Household"></option>
+  <option value="TLChance Properties LLC"></option>
   <option value="A Chance Realty"></option>
   <option value="2nd Chance"></option>
   <option value="Chance Builders LLC"></option>
@@ -1554,12 +1565,70 @@ function renderCashFlow(){
 
 /* ═══════════════ ENTITIES ═══════════════════════════════════ */
 const ENTITY_ALIASES={
-  'A Chance':      'A Chance Realty',
-  'JamFam':        'Personal',
-  '2nd Chance':    '2nd Chance',
+  'A Chance':          'A Chance Realty',
+  'JamFam':            'Household',
+  'Personal':          'Household',
+  'Joint':             'Household',
+  'TLChance':          'TLChance Properties LLC',
+  '2nd Chance':        '2nd Chance',
   '2nd Chance Motors': '2nd Chance',
+  'Chance Builders':   'Chance Builders LLC',
 };
 const normEnt=name=>ENTITY_ALIASES[name]||(name||'Personal');
+
+function openEntityDrawer(name){
+  const ents=entityRollup();
+  const e=ents.find(x=>x.name===name);if(!e)return;
+  document.getElementById('dAddr').textContent=e.name;
+  document.getElementById('dMeta').textContent=e.properties.length+' propert'+(e.properties.length===1?'y':'ies')+' · '+e.accounts.length+' account'+(e.accounts.length===1?'':'s')+' · Health: '+e.healthLabel;
+  document.getElementById('dStat').innerHTML=`<div>Assets<b>${fmt(e.totalAssets)}</b></div><div>Debt<b style="color:var(--brick)">${fmt(e.totalDebt)}</b></div><div>Net<b style="color:${e.equity>=0?'var(--green)':'var(--brick)'}">${fmt(e.equity)}</b></div>`;
+
+  let body='';
+  // Position summary
+  body+=`<div class="ed-sect">Balance sheet</div>`;
+  body+=`<div class="ed-row"><span class="el">Cash &amp; deposits</span><span class="ev">${fmt(e.deposits)}</span></div>`;
+  body+=`<div class="ed-row"><span class="el">Property value</span><span class="ev">${fmt(e.propValue)}</span></div>`;
+  body+=`<div class="ed-row"><span class="el">Total debt</span><span class="ev neg">${fmt(e.totalDebt)}</span></div>`;
+  body+=`<div class="ed-divider"></div>`;
+  body+=`<div class="ed-row"><span class="el"><b>Entity equity</b></span><span class="ev ${e.equity>=0?'pos':'neg'}">${fmt(e.equity)}</span></div>`;
+  // Cash flow
+  body+=`<div class="ed-sect">Cash flow / mo</div>`;
+  body+=`<div class="ed-row"><span class="el">Rent income</span><span class="ev pos">+${fmt(e.propRent)}</span></div>`;
+  body+=`<div class="ed-row"><span class="el">Debt service</span><span class="ev neg">-${fmt(e.propDebt)}</span></div>`;
+  body+=`<div class="ed-divider"></div>`;
+  body+=`<div class="ed-row"><span class="el"><b>Net cash flow</b></span><span class="ev ${e.cashflow>=0?'pos':'neg'}">${e.cashflow>=0?'+':''}${fmt(e.cashflow)}</span></div>`;
+  // Properties
+  if(e.properties.length){
+    body+=`<div class="ed-sect">Properties (${e.properties.length})</div>`;
+    e.properties.forEach(p=>{const r=activeRent(p);body+=`<div class="ed-row"><span class="el">${esc(p.addr)}</span><span class="ev">${fmt(p.value)}${r?'<span style="color:var(--green);font-size:11px;margin-left:5px">+'+fmt(r)+'/mo</span>':''}</span></div>`;});
+  }
+  // Accounts
+  if(e.accounts.length){
+    body+=`<div class="ed-sect">Accounts (${e.accounts.length})</div>`;
+    e.accounts.forEach(a=>{const sign=isDebt(a.kind)?'neg':'';body+=`<div class="ed-row"><span class="el">${esc(a.name)}</span><span class="ev ${sign}">${isDebt(a.kind)?'-':''}${fmt(a.balance||0)}</span></div>`;});
+  }
+  // Vehicles
+  const veh=(state.vehicles||[]).filter(v=>normEnt(v.entity||'2nd Chance')===name);
+  if(veh.length){
+    body+=`<div class="ed-sect">Vehicles (${veh.length})</div>`;
+    veh.forEach(v=>{body+=`<div class="ed-row"><span class="el">${esc(v.name||v.year+' '+v.make)}</span><span class="ev">${v.value?fmt(v.value):'—'}</span></div>`;});
+  }
+  // Export button
+  body+=`<button class="ed-export" id="entExportBtn">Export PDF for ${esc(e.name)}</button>`;
+
+  document.getElementById('drawerBody').innerHTML=body;
+  document.getElementById('entExportBtn').addEventListener('click',()=>{
+    closeDrawer();
+    // Pre-select this entity in the export modal
+    setTimeout(()=>{
+      openExportModal();
+      const sel=document.getElementById('expEntity');
+      if(sel){for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===name){sel.selectedIndex=i;break;}}}
+    },300);
+  });
+  document.getElementById('scrim').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
 
 function entityRollup(){
   const entities={};
@@ -1633,6 +1702,8 @@ function renderEntities(){
   const totDebt=ents.reduce((s,e)=>s+e.totalDebt,0);
   const totRent=ents.reduce((s,e)=>s+e.propRent,0);
   const totCF=ents.reduce((s,e)=>s+e.cashflow,0);
+  // wire card clicks after render
+  setTimeout(()=>document.querySelectorAll('[data-ent]').forEach(el=>el.addEventListener('click',()=>openEntityDrawer(el.dataset.ent))),0);
   document.getElementById('entTotal').innerHTML=`
     <div class="et-item"><div class="el">Total Assets</div><div class="en up">${fmt(totAssets)}</div></div>
     <div class="et-item"><div class="el">Total Debt</div><div class="en dn">${fmt(totDebt)}</div></div>
@@ -1640,7 +1711,7 @@ function renderEntities(){
     <div class="et-item"><div class="el">Net Cash Flow / mo</div><div class="en ${totCF>=0?'up':'dn'}">${totCF>=0?'+':''}${fmt(totCF)}</div></div>`;
 
   document.getElementById('entGrid').innerHTML=ents.map(e=>`
-    <div class="ent-card">
+    <div class="ent-card" data-ent="${esc(e.name)}">
       <div class="ec-head">
         <div class="ec-name">${esc(e.name)}</div>
         <div class="ec-type">${e.properties.length} propert${e.properties.length===1?'y':'ies'} · ${e.accounts.length} account${e.accounts.length===1?'':'s'}</div>
