@@ -819,7 +819,7 @@
       <div class="actions"><button class="btn primary" id="snapBtn2">Save snapshot now</button></div>
     </div>
     <div class="card"><div class="snap-trend" id="snapTrend"></div><div class="ledger" id="snapList"></div></div>
-    <p class="footnote">Each snapshot freezes today's reconciled net worth with a date stamp. Save one whenever a balance changes — a loan paydown, a new lease, a revalued property — and the trend builds itself.</p>
+    <p class="footnote">Each snapshot freezes your full financial composition — assets, debt, cash, property, investments, vehicles — so the trend can show what drove each change. Save one whenever a balance changes — a loan paydown, a new lease, a revalued property — and the trend builds itself.</p>
   </section>
 </main>
 
@@ -1779,16 +1779,40 @@ function renderSnapshots(){
   if(!s.length){trend.innerHTML=`<div class="empty"><b>No snapshots yet</b>Save your first snapshot to begin charting net worth over time.</div>`;list.innerHTML='';return;}
   const max=Math.max(...s.map(x=>x.nw)), min=Math.min(...s.map(x=>x.nw))*0.96;
   trend.innerHTML=s.map(x=>{const h=max===min?70:30+(x.nw-min)/(max-min)*70;return `<div class="bar"><div class="col" style="height:${h}%"></div><div class="dt">${new Date(x.date).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div></div>`;}).join('');
-  list.innerHTML=s.slice().reverse().map((x,i,arr)=>{const prev=arr[i+1];const d=prev?x.nw-prev.nw:0;const ds=prev?` <span style="color:${d>=0?'var(--green)':'var(--brick)'};font-size:12px">${d>=0?'+':'−'}${fmt(Math.abs(d))}</span>`:'';return `<div class="row"><span class="k">${fmtDate(x.date)}</span><span class="v">${fmt(x.nw)}${ds}</span></div>`;}).join('');
+  const sign=n=>(n>=0?'+':'−')+fmt(Math.abs(n));
+  const cl=n=>n>=0?'var(--green)':'var(--brick)';
+  list.innerHTML=s.slice().reverse().map((x,i,arr)=>{
+    const prev=arr[i+1];
+    const d=prev?x.nw-prev.nw:0;
+    const ds=prev?` <span style="color:${cl(d)};font-size:12px">${sign(d)}</span>`:'';
+    let attr='';
+    if(prev&&x.assets!=null&&prev.assets!=null){
+      const parts=[];
+      const dCash=(x.cash??0)-(prev.cash??0);
+      const dRe=(x.re??0)-(prev.re??0);
+      const dInv=(x.inv??0)-(prev.inv??0);
+      const dVeh=(x.veh??0)-(prev.veh??0);
+      const dDebt=(x.liab??0)-(prev.liab??0);
+      if(Math.abs(dCash)>=100)parts.push(`cash ${sign(dCash)}`);
+      if(Math.abs(dRe)>=100)parts.push(`property ${sign(dRe)}`);
+      if(Math.abs(dInv)>=100)parts.push(`investments ${sign(dInv)}`);
+      if(Math.abs(dVeh)>=100)parts.push(`vehicles ${sign(dVeh)}`);
+      if(Math.abs(dDebt)>=100)parts.push(`debt ${dDebt<0?'paid down '+fmt(Math.abs(dDebt)):'up '+fmt(dDebt)}`);
+      if(parts.length)attr=`<div style="font-size:11.5px;color:var(--ink-faint);padding:2px 0 6px">${parts.join(' · ')}</div>`;
+    }
+    return `<div class="row" style="flex-wrap:wrap"><span class="k">${fmtDate(x.date)}</span><span class="v">${fmt(x.nw)}${ds}</span>${attr?'<div style="width:100%">'+attr+'</div>':''}</div>`;
+  }).join('');
 }
 function saveSnapshot(quiet){
-  const nw=totals().nw;
+  const t=totals(),re=reTotals();
+  const inv=(state.accounts||[]).filter(a=>!a.excluded&&a.kind==='investment').reduce((s,a)=>s+(a.balance||0),0);
+  const veh=(state.vehicles||[]).reduce((s,v)=>s+(v.value||0),0);
   const today=new Date().toISOString().slice(0,10);
   state.snapshots=state.snapshots.filter(s=>s.date!==today);
-  state.snapshots.push({date:today,nw});
+  state.snapshots.push({date:today,nw:t.nw,assets:t.assets,liab:t.liab,cash:t.cash,re:re.value,reLoan:re.loan,inv,veh});
   state.snapshots.sort((a,b)=>new Date(a.date)-new Date(b.date));
   save();renderHero();renderSnapshots();
-  if(!quiet)toast('Snapshot saved · '+fmt(nw));
+  if(!quiet)toast('Snapshot saved · '+fmt(t.nw));
 }
 function autoSnapshot(){
   if(!state.snapshots||!state.snapshots.length){saveSnapshot(true);return;}
