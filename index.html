@@ -481,7 +481,8 @@
   @media(max-width:860px){
     body{flex-direction:column}
     aside{width:100%;height:auto;position:relative;flex-direction:row;align-items:center;padding:10px 16px;flex-wrap:wrap;gap:10px}
-    .brand{border:none;padding:0;flex:1}.brand .sub,.as-of,.user-pill{display:none}
+    .brand{border:none;padding:0;flex:1}.brand .sub,.as-of{display:none}.user-pill{display:none!important}
+    .brand .mark{font-size:16px;gap:8px}.brand .mark svg{width:20px;height:23px}
     nav{flex-direction:row;margin:0;flex-wrap:wrap}.nav .group-label,nav .group-label{display:none}
     nav button{padding:7px 10px;font-size:13px}
     main{padding:18px 16px 80px}
@@ -518,7 +519,7 @@
     .card h2{font-size:15px;padding:13px 16px 0}
     .ledger{padding:5px 16px 12px}
     .save-dot{bottom:calc(62px + env(safe-area-inset-bottom));right:12px}
-    aside{padding-top:max(10px,env(safe-area-inset-top))}
+    aside{padding:7px 14px;padding-top:max(7px,env(safe-area-inset-top))}
   }
   @media(max-width:380px){
     .hero .nw{font-size:27px}
@@ -618,6 +619,10 @@
     <button data-view="snapshots">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg>
       <span>Trend</span>
+    </button>
+    <button id="moreSignout">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      <span>Sign out</span>
     </button>
   </div>
 </div>
@@ -955,6 +960,7 @@ async function doLogin(){
 document.getElementById('loginBtn').addEventListener('click',doLogin);
 document.getElementById('loginPwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('logoutBtn').addEventListener('click',async()=>{await _sb.auth.signOut();location.reload();});
+document.getElementById('moreSignout').addEventListener('click',async()=>{await _sb.auth.signOut();location.reload();});
 _sb.auth.onAuthStateChange((event,session)=>{
   if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session?.user){
     if(!_user)showApp(session.user);
