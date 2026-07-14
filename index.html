@@ -364,6 +364,10 @@
   .q-row input.changed{border-color:var(--green);background:rgba(46,122,98,.04)}
   .q-sect{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;padding:14px 0 4px}
   .q-scroll{max-height:55vh;overflow-y:auto;margin:0 -4px;padding:0 4px}
+  .imp-debt-warn{font-size:11px;color:var(--brick);font-weight:600;margin-top:3px}
+  .improw.debt-row select{border-color:var(--brick-soft)}
+  .improw.debt-row .iv{color:var(--brick)}
+
   .paste-area{width:100%;box-sizing:border-box;min-height:90px;border:1.5px dashed var(--line-strong);border-radius:11px;padding:12px;font-family:"IBM Plex Mono",monospace;font-size:12px;outline:none;background:var(--surface-2);resize:vertical;margin-top:12px}
   .paste-area:focus{border-color:var(--brass);background:#fff}
   .imp-divider{display:flex;align-items:center;gap:12px;margin:16px 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
@@ -2060,23 +2064,74 @@ async function readScreenshots(files){
   impStatus(`Found ${impParsed.length} account${impParsed.length>1?'s':''}${errs.length?' ('+errs.length+' screenshot'+(errs.length>1?'s':'')+' failed)':''}. Match each to an existing account, or create new:`,false);
   renderImpReview();
 }
+function findBestMatch(imp){
+  const accts=state.accounts||[];
+  if(!accts.length)return null;
+  const iName=(imp.name||'').toLowerCase().trim();
+  const iInst=(imp.institution||'').toLowerCase().trim();
+  const iDebt=isDebt(imp.kind);
+  let best=null,bestScore=0;
+  accts.forEach(a=>{
+    let sc=0;
+    const aName=(a.name||'').toLowerCase();
+    const aInst=(a.institution||'').toLowerCase();
+    // name scoring
+    if(aName===iName)sc+=60;
+    else if(aName.includes(iName)||iName.includes(aName))sc+=35;
+    else{
+      const iw=iName.split(/\s+/).filter(w=>w.length>2);
+      const hits=iw.filter(w=>aName.includes(w));
+      sc+=Math.floor(hits.length/Math.max(iw.length,1)*25);
+    }
+    // institution scoring
+    if(iInst&&aInst&&(aInst.includes(iInst)||iInst.includes(aInst)))sc+=20;
+    // kind match (debt vs deposit)
+    if(isDebt(a.kind)===iDebt)sc+=10;
+    if(sc>bestScore&&sc>=20){bestScore=sc;best=a;}
+  });
+  return best;
+}
 function renderImpReview(){
   document.getElementById('impReview').innerHTML=impParsed.map((x,i)=>{
-    const guess=state.accounts.find(a=>a.name&&(a.name.toLowerCase().includes(x.name.toLowerCase())||x.name.toLowerCase().includes(a.name.toLowerCase())));
-    const opts=`<option value="new">＋ Create new account</option>`+state.accounts.map(a=>`<option value="${a.id}"${guess&&guess.id===a.id?' selected':''}>${esc(a.name)} (${kindLabel(a.kind)} · ${esc(a.entity||'Personal')})</option>`).join('');
-    return `<div class="improw"><div><div class="in">${esc(x.name)}</div><div class="ii">${esc(x.institution)||kindLabel(x.kind)}</div></div><div class="iv">${fmt(x.balance)}</div><select data-imp="${i}">${opts}</select></div>`;
+    const guess=findBestMatch(x);
+    const matchedDebt=guess&&isDebt(guess.kind);
+    const opts=`<option value="new">＋ Create new account</option>`+
+      state.accounts.map(a=>`<option value="${a.id}"${guess&&guess.id===a.id?' selected':''}>${esc(a.name)} (${kindLabel(a.kind)} · ${esc(normEnt(a.entity||'Household'))})</option>`).join('');
+    const warn=matchedDebt?`<div class="imp-debt-warn">⚠ Debt account — updates outstanding loan balance, not a deposit</div>`:'';
+    return `<div class="improw${matchedDebt?' debt-row':''}">
+      <div><div class="in">${esc(x.name)}</div><div class="ii">${esc(x.institution)||kindLabel(x.kind)}</div>${warn}</div>
+      <div class="iv">${fmt(x.balance)}</div>
+      <select data-imp="${i}">${opts}</select>
+    </div>`;
   }).join('');
   document.getElementById('impApply').style.display='inline-block';
 }
 function applyImport(){
-  const today=new Date().toISOString().slice(0,10);let upd=0,created=0;
+  const today=new Date().toISOString().slice(0,10);let upd=0,created=0,blocked=0;
   impParsed.forEach((x,i)=>{
     const sel=document.querySelector(`select[data-imp="${i}"]`);const v=sel?sel.value:'new';
-    if(v==='new'){state.accounts.push({id:'a'+Date.now()+i,name:x.name,institution:x.institution,kind:x.kind,entity:'Personal',balance:x.balance,updated:today});created++;}
-    else{const a=state.accounts.find(z=>z.id===v);if(a){a.balance=x.balance;a.updated=today;if(!a.institution&&x.institution)a.institution=x.institution;upd++;}}
+    if(v==='new'){
+      // Safety: never silently create a new account from what looks like a debt
+      if(isDebt(x.kind)){blocked++;return;}
+      state.accounts.push({id:'a'+Date.now()+i,name:x.name,institution:x.institution,
+        kind:x.kind,entity:'Household',balance:x.balance,updated:today});
+      created++;
+    }else{
+      const a=state.accounts.find(z=>z.id===v);
+      if(a){
+        a.balance=x.balance;
+        a.updated=today;
+        // Never change the account kind on import — preserves loan/credit classification
+        if(!a.institution&&x.institution)a.institution=x.institution;
+        upd++;
+      }
+    }
   });
   save();recomputeAll();closeImport();
-  toast(`${upd} balance${upd!==1?'s':''} updated${created?' · '+created+' account'+(created>1?'s':'')+' created':''}`);
+  let msg=`${upd} balance${upd!==1?'s':''} updated`;
+  if(created)msg+=` · ${created} new account${created>1?'s':''} created`;
+  if(blocked)msg+=` · ${blocked} possible debt account${blocked>1?'s':''} skipped — add manually`;
+  toast(msg);
 }
 /* ── Quick update ─────────────────────────────── */
 function openQuick(){
